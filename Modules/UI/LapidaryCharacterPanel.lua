@@ -16,11 +16,12 @@ local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
-local BUTTON_WIDTH = 68
-local BUTTON_HEIGHT = 18
-local BUTTON_GAP = 3
-local BLOCK_GAP = 12
-local GRIP_WIDTH = 12
+local BUTTON_WIDTH = 100
+local BUTTON_HEIGHT = 17
+local BUTTON_GAP = 2
+local BLOCK_GAP = 8
+local DEFAULT_X = 80
+local DEFAULT_Y = -68
 
 local function setBusy(busy)
     local frame = private.frame
@@ -53,7 +54,7 @@ local function restorePosition(frame)
     if saved and saved.point then
         frame:SetPoint(saved.point, UIParent, saved.relativePoint, saved.x, saved.y)
     else
-        frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", 18, -35)
+        frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", DEFAULT_X, DEFAULT_Y)
     end
 end
 
@@ -84,7 +85,7 @@ end
 
 local function createFrame()
     local frame = CreateFrame("Frame", "LapidaryCharacterButtons", UIParent)
-    frame:SetSize(GRIP_WIDTH + BUTTON_WIDTH * 4 + BUTTON_GAP * 2 + BLOCK_GAP, BUTTON_HEIGHT)
+    frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT * 2 + BUTTON_GAP)
     frame:SetFrameStrata("HIGH")
     frame:EnableMouse(true)
     frame:SetMovable(true)
@@ -96,35 +97,29 @@ local function createFrame()
         savePosition(self)
     end)
 
-    frame.grip = frame:CreateTexture(nil, "OVERLAY")
-    frame.grip:SetSize(GRIP_WIDTH - 4, BUTTON_HEIGHT - 4)
-    frame.grip:SetPoint("LEFT", 1, 0)
-    frame.grip:SetTexture("Interface\\Buttons\\UI-SortArrow")
-    frame.grip:SetVertexColor(0.7, 0.7, 0.7, 0.7)
-
     frame.outEquipped = makeButton(frame, L.ACTION_REMOVE_ALL, L.TOOLTIP_REMOVE_EQUIPPED, function()
         setBusy(true)
         LapidarySockets:RemoveAll(function() setBusy(false) end, false)
     end)
-    frame.outEquipped:SetPoint("LEFT", GRIP_WIDTH, 0)
+    frame.outEquipped:SetPoint("TOPLEFT", 0, 0)
 
     frame.inEquipped = makeButton(frame, L.ACTION_INSERT_ALL, L.TOOLTIP_INSERT_EQUIPPED, function()
         setBusy(true)
         LapidarySockets:InsertAll(function() setBusy(false) end, false)
     end)
-    frame.inEquipped:SetPoint("LEFT", frame.outEquipped, "RIGHT", BUTTON_GAP, 0)
+    frame.inEquipped:SetPoint("TOPLEFT", frame.outEquipped, "BOTTOMLEFT", 0, -BUTTON_GAP)
 
     frame.outEverything = makeButton(frame, L.ACTION_REMOVE_EVERYTHING, L.TOOLTIP_REMOVE_EVERYTHING, function()
         setBusy(true)
         LapidarySockets:RemoveAll(function() setBusy(false) end, true)
     end)
-    frame.outEverything:SetPoint("LEFT", frame.inEquipped, "RIGHT", BLOCK_GAP, 0)
+    frame.outEverything:SetPoint("TOPLEFT", frame.outEquipped, "TOPRIGHT", BLOCK_GAP, 0)
 
     frame.inEverything = makeButton(frame, L.ACTION_INSERT_EVERYTHING, L.TOOLTIP_INSERT_EVERYTHING, function()
         setBusy(true)
         LapidarySockets:InsertAll(function() setBusy(false) end, true)
     end)
-    frame.inEverything:SetPoint("LEFT", frame.outEverything, "RIGHT", BUTTON_GAP, 0)
+    frame.inEverything:SetPoint("TOPLEFT", frame.outEverything, "BOTTOMLEFT", 0, -BUTTON_GAP)
 
     frame.buttons = {
         frame.outEquipped, frame.inEquipped,
