@@ -3,8 +3,8 @@
 local LapidaryRestoreFrame = LapidaryLoader:CreateModule("LapidaryRestoreFrame")
 local private = LapidaryRestoreFrame.private
 
----@type LapidaryConstants
-local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
+---@type LapidarySockets
+local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 ---@type LapidaryMerchant
 local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 ---@type LapidaryGems
@@ -90,8 +90,38 @@ local function createFrame()
         LapidaryMerchant:BuyRestore()
     end)
 
+    local half = (WIDTH - PADDING * 2) / 2 - 2
+
+    frame.actionOut = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    frame.actionOut:SetSize(half, 20)
+    frame.actionOut:SetPoint("TOPLEFT", PADDING, -PADDING - 94)
+    frame.actionOut:SetText(L.ACTION_REMOVE_ALL)
+    frame.actionOut:SetScript("OnClick", function()
+        LapidarySockets:RemoveAll(nil, false)
+    end)
+    frame.actionOut:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(L.TOOLTIP_REMOVE_EQUIPPED, 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    frame.actionOut:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
+    frame.actionIn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    frame.actionIn:SetSize(half, 20)
+    frame.actionIn:SetPoint("TOPLEFT", frame.actionOut, "TOPRIGHT", 4, 0)
+    frame.actionIn:SetText(L.ACTION_INSERT_ALL)
+    frame.actionIn:SetScript("OnClick", function()
+        LapidarySockets:InsertAll(nil, false)
+    end)
+    frame.actionIn:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(L.TOOLTIP_INSERT_EQUIPPED, 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    frame.actionIn:SetScript("OnLeave", function() GameTooltip:Hide() end)
+
     frame.bagsLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    frame.bagsLabel:SetPoint("TOPLEFT", PADDING, -PADDING - 98)
+    frame.bagsLabel:SetPoint("TOPLEFT", PADDING, -PADDING - 124)
     frame.bagsLabel:SetText(L.RESTORE_IN_BAGS)
 
     return frame
@@ -109,7 +139,7 @@ local function layoutBagIcons(frame)
         local icon = acquireIcon(frame, index)
         local column = (index - 1) % MAX_ROW
         local row = math.floor((index - 1) / MAX_ROW)
-        icon:SetPoint("TOPLEFT", PADDING + column * (ICON + SPACING), -PADDING - 114 - row * (ICON + SPACING))
+        icon:SetPoint("TOPLEFT", PADDING + column * (ICON + SPACING), -PADDING - 140 - row * (ICON + SPACING))
         icon.texture:SetTexture(GetItemIcon(itemId))
         icon.count:SetText(counts[itemId] > 1 and counts[itemId] or "")
         icon:Show()
@@ -118,7 +148,7 @@ local function layoutBagIcons(frame)
 
     local rows = math.max(math.ceil(shown / MAX_ROW), 1)
     frame.bagsLabel:SetText(shown > 0 and L.RESTORE_IN_BAGS or L.RESTORE_NOTHING)
-    frame:SetHeight(PADDING + 114 + rows * (ICON + SPACING) + PADDING)
+    frame:SetHeight(PADDING + 140 + rows * (ICON + SPACING) + PADDING)
 end
 
 function LapidaryRestoreFrame:Refresh()

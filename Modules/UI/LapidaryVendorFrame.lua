@@ -9,8 +9,6 @@ local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 ---@type LapidaryBuyButton
 local LapidaryBuyButton = LapidaryLoader:ImportModule("LapidaryBuyButton")
----@type LapidarySockets
-local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
 
@@ -25,14 +23,6 @@ local function createHeader(parent, text)
     label:SetText(text)
     label:SetJustifyH("LEFT")
     return label
-end
-
-local function createActionButton(parent, text, width, onClick)
-    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
-    button:SetSize(width, 20)
-    button:SetText(text)
-    button:SetScript("OnClick", onClick)
-    return button
 end
 
 local function buildBody(frame)
@@ -62,17 +52,6 @@ local function buildBody(frame)
         y = y - rows * (size + SPACING) - SPACING
     end
 
-    frame.actionOut = createActionButton(frame, L["ACTION_REMOVE_ALL"], width / 2 - 2, function()
-        LapidarySockets:RemoveAll()
-    end)
-    frame.actionOut:SetPoint("TOPLEFT", PADDING, y - 4)
-
-    frame.actionIn = createActionButton(frame, L["ACTION_INSERT_ALL"], width / 2 - 2, function()
-        LapidarySockets:InsertAll()
-    end)
-    frame.actionIn:SetPoint("TOPLEFT", PADDING + width / 2 + 2, y - 4)
-
-    y = y - 28
     frame:SetSize(width + PADDING * 2, math.abs(y) + PADDING)
 end
 
