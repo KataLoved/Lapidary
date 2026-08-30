@@ -1,0 +1,16 @@
+# Editor and IDE
+.vscode/
+.idea/
+*.code-workspace
+
+# Local working files, not part of the addon
+CLAUDE.md
+TODO.md
+_backup/
+_publish/
+deploy.ps1
+
+# OS noise
+Thumbs.db
+desktop.ini
+.DS_Store
