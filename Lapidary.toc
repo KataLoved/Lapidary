@@ -2,7 +2,7 @@
 ## Title: |cFFFF8000Lapi|rdary
 ## Notes: Менеджер чёрных бриллиантов для Sirus: покупка, огранка, перенос камней
 ## Author: NastyaLove
-## Version: 1.0.0
+## Version: 1.0.1
 ## SavedVariables: LapidaryDB
 
 Modules\Libs\LapidaryLoader.lua
