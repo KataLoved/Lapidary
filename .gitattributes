@@ -1,0 +1,6 @@
+# Keep repository-only files out of the release archive, so the zip can be
+# dropped straight into Interface\AddOns.
+.gitattributes  export-ignore
+.gitignore      export-ignore
+.github/        export-ignore
+deploy.ps1      export-ignore
