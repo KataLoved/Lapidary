@@ -69,6 +69,8 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     SLASH_HELP_TOGGLE = "enable or disable the addon",
     SLASH_HELP_STATUS = "print current state",
     SLASH_HELP_SCOPE = "append all to out/in/swap to include items sitting in bags",
+    SLASH_HELP_RESETPOS = "move the button bar back to its default spot",
+    SLASH_POS_RESET = "button bar position reset.",
     SLASH_ENABLED = "enabled.",
     SLASH_DISABLED = "disabled.",
 

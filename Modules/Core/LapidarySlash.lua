@@ -36,6 +36,9 @@ function LapidarySlash:Handle(args)
         handlers.swapAll(everything)
     elseif command == "toggle" then
         say(handlers.toggle() and L["SLASH_ENABLED"] or L["SLASH_DISABLED"])
+    elseif command == "resetpos" then
+        handlers.resetPos()
+        say(L.SLASH_POS_RESET)
     elseif command == "status" then
         for _, line in ipairs(handlers.status()) do
             say(line)
@@ -46,7 +49,8 @@ function LapidarySlash:Handle(args)
         print("  /lap in     -- " .. L["SLASH_HELP_IN"])
         print("  /lap swap   -- " .. L["SLASH_HELP_SWAP"])
         print("  /lap toggle -- " .. L["SLASH_HELP_TOGGLE"])
-        print("  /lap status -- " .. L["SLASH_HELP_STATUS"])
+        print("  /lap status   -- " .. L["SLASH_HELP_STATUS"])
+        print("  /lap resetpos -- " .. L["SLASH_HELP_RESETPOS"])
         print("  " .. L["SLASH_HELP_SCOPE"])
     end
 end

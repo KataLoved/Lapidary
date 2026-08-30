@@ -140,7 +140,15 @@ function LapidaryRestoreFrame:Refresh()
         return
     end
 
-    local entries = LapidaryMerchant:GetRestoreEntries()
+    local offered = LapidaryMerchant:GetRestoreEntries()
+    local entries = {}
+    for index = 1, #offered do
+        local entry = offered[index]
+        if entry.gemId and (GetItemCount(entry.gemId) or 0) > 0 then
+            entries[#entries + 1] = entry
+        end
+    end
+
     for _, row in pairs(frame.rows) do
         row:Hide()
     end

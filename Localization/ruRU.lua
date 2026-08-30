@@ -69,6 +69,8 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     SLASH_HELP_TOGGLE = "включить или выключить аддон",
     SLASH_HELP_STATUS = "показать текущее состояние",
     SLASH_HELP_SCOPE = "добавь all к out/in/swap, чтобы захватить и вещи в сумках",
+    SLASH_HELP_RESETPOS = "вернуть панель кнопок на место",
+    SLASH_POS_RESET = "позиция панели сброшена.",
     SLASH_ENABLED = "включён.",
     SLASH_DISABLED = "выключен.",
 

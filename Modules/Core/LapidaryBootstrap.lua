@@ -15,6 +15,8 @@ local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 local LapidaryEquipSet = LapidaryLoader:ImportModule("LapidaryEquipSet")
 ---@type LapidaryEventHandler
 local LapidaryEventHandler = LapidaryLoader:ImportModule("LapidaryEventHandler")
+---@type LapidaryCharacterPanel
+local LapidaryCharacterPanel = LapidaryLoader:ImportModule("LapidaryCharacterPanel")
 ---@type LapidaryVendorFrame
 local LapidaryVendorFrame = LapidaryLoader:ImportModule("LapidaryVendorFrame")
 ---@type LapidarySlash
@@ -52,6 +54,9 @@ function LapidaryBootstrap:RegisterSlash()
             config.enabled = not config.enabled
             LapidaryVendorFrame:Update()
             return config.enabled
+        end,
+        resetPos = function()
+            LapidaryCharacterPanel:ResetPosition()
         end,
         status = function()
             return LapidaryBootstrap:BuildStatus()
