@@ -21,6 +21,7 @@ Modules\Api\LapidaryMerchant.lua
 Modules\Domain\LapidaryGems.lua
 Modules\Domain\LapidarySockets.lua
 Modules\Domain\LapidaryEquipSet.lua
+Modules\Domain\LapidaryFavourites.lua
 Modules\UI\LapidaryBuyButton.lua
 Modules\UI\LapidaryVendorFrame.lua
 Modules\UI\LapidaryRestoreFrame.lua

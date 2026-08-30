@@ -9,6 +9,8 @@ local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 ---@type LapidaryBuyButton
 local LapidaryBuyButton = LapidaryLoader:ImportModule("LapidaryBuyButton")
+---@type LapidaryFavourites
+local LapidaryFavourites = LapidaryLoader:ImportModule("LapidaryFavourites")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
 ---@type LapidarySkin
@@ -23,43 +25,100 @@ local WIDTH = PADDING * 2 + COLUMN_WIDTH * 2 + COLUMN_GAP
 local ROW_HEIGHT = 20
 local HEADER_HEIGHT = 18
 local GROUP_GAP = 6
+local BODY_TOP = -PADDING - 36
 local GAP_FROM_MERCHANT = 12
 local COLUMNS = {
     { "primary", "secondary" },
     { "hybrid", "tank" },
 }
 
-local function createHeader(parent, text)
-    local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    label:SetText(text)
-    label:SetJustifyH("LEFT")
-    label:SetTextColor(1, 0.82, 0)
-    return label
+local function acquireRow(frame, index)
+    if not frame.rows[index] then
+        frame.rows[index] = LapidaryBuyButton:Create(frame, COLUMN_WIDTH, ROW_HEIGHT)
+    end
+    return frame.rows[index]
 end
 
-local function buildBody(frame)
-    frame.rows = {}
-    local top = -PADDING - 36
-    local lowest = top
+local function acquireHeader(frame, index)
+    if not frame.headers[index] then
+        local label = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+        label:SetJustifyH("LEFT")
+        label:SetTextColor(1, 0.82, 0)
+        frame.headers[index] = label
+    end
+    return frame.headers[index]
+end
 
+---Favourites go into a section of their own above the two columns, and are
+---taken out of the group they came from so no gem appears twice.
+local function layout(frame)
+    for _, row in pairs(frame.rows) do
+        row:Hide()
+    end
+    for _, header in pairs(frame.headers) do
+        header:Hide()
+    end
+
+    local usedRows, usedHeaders = 0, 0
+    local grouped, pinned = {}, {}
+
+    for _, groupKey in ipairs(LapidaryConstants.GROUP_ORDER) do
+        local favourites, rest = LapidaryFavourites:Split(LapidaryConstants.GEM_GROUPS[groupKey])
+        grouped[groupKey] = rest
+        for index = 1, #favourites do
+            pinned[#pinned + 1] = favourites[index]
+        end
+    end
+
+    local function placeRow(entry, x, y)
+        usedRows = usedRows + 1
+        local row = acquireRow(frame, usedRows)
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", x, y)
+        LapidaryBuyButton:Bind(row, entry)
+        row:Show()
+    end
+
+    local function placeHeader(text, x, y)
+        usedHeaders = usedHeaders + 1
+        local header = acquireHeader(frame, usedHeaders)
+        header:ClearAllPoints()
+        header:SetPoint("TOPLEFT", x, y)
+        header:SetText(text)
+        header:Show()
+    end
+
+    local top = BODY_TOP
+
+    if #pinned > 0 then
+        placeHeader(L.GROUP_FAVOURITES, PADDING, top)
+        top = top - HEADER_HEIGHT
+        for index = 1, #pinned do
+            local column = (index - 1) % 2
+            local row = math.floor((index - 1) / 2)
+            placeRow(pinned[index],
+                PADDING + column * (COLUMN_WIDTH + COLUMN_GAP),
+                top - row * ROW_HEIGHT)
+        end
+        top = top - math.ceil(#pinned / 2) * ROW_HEIGHT - GROUP_GAP * 2
+    end
+
+    local lowest = top
     for columnIndex = 1, #COLUMNS do
         local x = PADDING + (columnIndex - 1) * (COLUMN_WIDTH + COLUMN_GAP)
         local y = top
 
         for _, groupKey in ipairs(COLUMNS[columnIndex]) do
-            local entries = LapidaryConstants.GEM_GROUPS[groupKey]
-            local header = createHeader(frame, L[LapidaryConstants.GROUP_TITLE_KEYS[groupKey]])
-            header:SetPoint("TOPLEFT", x, y)
-            y = y - HEADER_HEIGHT
-
-            for index = 1, #entries do
-                local row = LapidaryBuyButton:Create(frame, entries[index], COLUMN_WIDTH, ROW_HEIGHT)
-                row:SetPoint("TOPLEFT", x, y)
-                frame.rows[#frame.rows + 1] = row
-                y = y - ROW_HEIGHT
+            local entries = grouped[groupKey]
+            if #entries > 0 then
+                placeHeader(L[LapidaryConstants.GROUP_TITLE_KEYS[groupKey]], x, y)
+                y = y - HEADER_HEIGHT
+                for index = 1, #entries do
+                    placeRow(entries[index], x, y)
+                    y = y - ROW_HEIGHT
+                end
+                y = y - GROUP_GAP
             end
-
-            y = y - GROUP_GAP
         end
 
         if y < lowest then
@@ -76,6 +135,9 @@ local function createFrame()
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
     frame:EnableMouse(true)
+    frame:SetSize(WIDTH, 100)
+    frame.rows = {}
+    frame.headers = {}
 
     LapidarySkin:Frame(frame)
 
@@ -87,10 +149,11 @@ local function createFrame()
     frame.currency:SetPoint("TOPLEFT", PADDING, -PADDING - 18)
     frame.currency:SetJustifyH("LEFT")
 
-    buildBody(frame)
     return frame
 end
 
+---Only the row contents, no repositioning: BAG_UPDATE arrives in bursts of
+---dozens and relaying out every row each time is wasted work.
 function LapidaryVendorFrame:Refresh()
     local frame = private.frame
     if not frame or not frame:IsShown() then
@@ -101,9 +164,21 @@ function LapidaryVendorFrame:Refresh()
         LapidaryMerchant:GetCurrencyCount(),
         GetItemCount(LapidaryConstants.SHARD_ID) or 0
     )
-    for i = 1, #frame.rows do
-        LapidaryBuyButton:Refresh(frame.rows[i])
+    for index = 1, #frame.rows do
+        local row = frame.rows[index]
+        if row:IsShown() then
+            LapidaryBuyButton:Refresh(row)
+        end
     end
+end
+
+function LapidaryVendorFrame:Relayout()
+    local frame = private.frame
+    if not frame or not frame:IsShown() then
+        return
+    end
+    layout(frame)
+    self:Refresh()
 end
 
 function LapidaryVendorFrame:Update()
@@ -117,9 +192,12 @@ function LapidaryVendorFrame:Update()
 
     if not private.frame then
         private.frame = createFrame()
+        LapidaryFavourites:SetChangeHandler(function()
+            LapidaryVendorFrame:Relayout()
+        end)
     end
     private.frame:Show()
-    self:Refresh()
+    self:Relayout()
 end
 
 function LapidaryVendorFrame:Hide()

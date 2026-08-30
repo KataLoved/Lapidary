@@ -106,6 +106,7 @@ LapidaryConstants.DEFAULTS = {
     enabled = true,
     autoSwapOnEquipSet = true,
     showVendorPanel = true,
+    favourites = {},
     buttonSize = 26,
     buttonsPerRow = 6,
     framePos = { anchor = "TOPLEFT", x = 0, y = 0 },

@@ -2,6 +2,9 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     PANEL_TITLE = "Огранка",
     PANEL_CURRENCY = "Бриллианты: |cFFFFFFFF%d|r    Осколки: |cFFFFFFFF%d|r",
 
+    GROUP_FAVOURITES = "Избранное",
+    TOOLTIP_FAVOURITE_ADD = "ПКМ — добавить в избранное",
+    TOOLTIP_FAVOURITE_REMOVE = "ПКМ — убрать из избранного",
     GROUP_PRIMARY = "Основные статы",
     GROUP_SECONDARY = "Вторичные статы",
     GROUP_HYBRID = "Двойные",

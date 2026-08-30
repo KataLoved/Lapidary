@@ -2,6 +2,9 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     PANEL_TITLE = "Lapidary",
     PANEL_CURRENCY = "Diamonds: |cFFFFFFFF%d|r    Shards: |cFFFFFFFF%d|r",
 
+    GROUP_FAVOURITES = "Favourites",
+    TOOLTIP_FAVOURITE_ADD = "Right click - add to favourites",
+    TOOLTIP_FAVOURITE_REMOVE = "Right click - remove from favourites",
     GROUP_PRIMARY = "Primary stats",
     GROUP_SECONDARY = "Secondary stats",
     GROUP_HYBRID = "Two-stat",
