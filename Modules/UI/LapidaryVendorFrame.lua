@@ -11,28 +11,30 @@ local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 local LapidaryBuyButton = LapidaryLoader:ImportModule("LapidaryBuyButton")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
+---@type LapidarySkin
+local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
 
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
-local PADDING = 10
-local SPACING = 3
-local HEADER_HEIGHT = 16
+local PADDING = 12
+local WIDTH = 296
+local ROW_HEIGHT = 20
+local HEADER_HEIGHT = 18
+local GROUP_GAP = 6
+local GAP_FROM_MERCHANT = 12
 
 local function createHeader(parent, text)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     label:SetText(text)
     label:SetJustifyH("LEFT")
+    label:SetTextColor(1, 0.82, 0)
     return label
 end
 
 local function buildBody(frame)
-    local config = LapidaryDatabase:Get() or LapidaryConstants.DEFAULTS
-    local size = config.buttonSize
-    local perRow = config.buttonsPerRow
-    local width = perRow * (size + SPACING) - SPACING
-
-    frame.buttons = {}
-    local y = -PADDING - 34
+    frame.rows = {}
+    local rowWidth = WIDTH - PADDING * 2
+    local y = -PADDING - 36
 
     for _, groupKey in ipairs(LapidaryConstants.GROUP_ORDER) do
         local entries = LapidaryConstants.GEM_GROUPS[groupKey]
@@ -41,47 +43,37 @@ local function buildBody(frame)
         y = y - HEADER_HEIGHT
 
         for index = 1, #entries do
-            local column = (index - 1) % perRow
-            local row = math.floor((index - 1) / perRow)
-            local button = LapidaryBuyButton:Create(frame, entries[index], size)
-            button:SetPoint("TOPLEFT", PADDING + column * (size + SPACING), y - row * (size + SPACING))
-            frame.buttons[#frame.buttons + 1] = button
+            local row = LapidaryBuyButton:Create(frame, entries[index], rowWidth, ROW_HEIGHT)
+            row:SetPoint("TOPLEFT", PADDING, y)
+            frame.rows[#frame.rows + 1] = row
+            y = y - ROW_HEIGHT
         end
 
-        local rows = math.ceil(#entries / perRow)
-        y = y - rows * (size + SPACING) - SPACING
+        y = y - GROUP_GAP
     end
 
-    frame:SetSize(width + PADDING * 2, math.abs(y) + PADDING)
+    frame:SetSize(WIDTH, math.abs(y) + PADDING)
 end
 
 local function createFrame()
     local frame = CreateFrame("Frame", "LapidaryVendorPanel", MerchantFrame)
-    frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", -4, -12)
+    frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", GAP_FROM_MERCHANT, 0)
     frame:SetFrameStrata("HIGH")
+    frame:SetToplevel(true)
+    frame:EnableMouse(true)
 
-    frame.backdrop = frame:CreateTexture(nil, "BACKGROUND")
-    frame.backdrop:SetAllPoints()
-    frame.backdrop:SetTexture(0, 0, 0, 0.85)
+    LapidarySkin:Frame(frame)
 
     frame.title = frame:CreateFontString(nil, "OVERLAY", "GameFontNormal")
     frame.title:SetPoint("TOPLEFT", PADDING, -PADDING)
-    frame.title:SetText(L["PANEL_TITLE"])
+    frame.title:SetText(L.PANEL_TITLE)
 
     frame.currency = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    frame.currency:SetPoint("TOPLEFT", PADDING, -PADDING - 16)
+    frame.currency:SetPoint("TOPLEFT", PADDING, -PADDING - 18)
     frame.currency:SetJustifyH("LEFT")
 
     buildBody(frame)
     return frame
-end
-
-local function refreshCounters(frame)
-    frame.currency:SetFormattedText(
-        L["PANEL_CURRENCY"],
-        LapidaryMerchant:GetCurrencyCount(),
-        GetItemCount(LapidaryConstants.SHARD_ID) or 0
-    )
 end
 
 function LapidaryVendorFrame:Refresh()
@@ -89,22 +81,19 @@ function LapidaryVendorFrame:Refresh()
     if not frame or not frame:IsShown() then
         return
     end
-    refreshCounters(frame)
-    for i = 1, #frame.buttons do
-        LapidaryBuyButton:Refresh(frame.buttons[i])
+    frame.currency:SetFormattedText(
+        L.PANEL_CURRENCY,
+        LapidaryMerchant:GetCurrencyCount(),
+        GetItemCount(LapidaryConstants.SHARD_ID) or 0
+    )
+    for i = 1, #frame.rows do
+        LapidaryBuyButton:Refresh(frame.rows[i])
     end
 end
 
 function LapidaryVendorFrame:Update()
     local config = LapidaryDatabase:Get()
-    if not (config and config.enabled and config.showVendorPanel) then
-        if private.frame then
-            private.frame:Hide()
-        end
-        return
-    end
-
-    if not LapidaryMerchant:IsCuttingVendor() then
+    if not (config and config.enabled and config.showVendorPanel and LapidaryMerchant:IsCuttingVendor()) then
         if private.frame then
             private.frame:Hide()
         end

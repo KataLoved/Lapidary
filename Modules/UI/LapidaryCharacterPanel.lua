@@ -9,6 +9,8 @@ local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
+---@type LapidarySkin
+local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
 ---@type LapidaryTimer
 local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 
@@ -45,6 +47,7 @@ local function makeButton(parent, label, tooltip, handler)
     if fontString then
         fontString:SetFontObject("GameFontNormalSmall")
     end
+    LapidarySkin:Button(button)
     button:SetScript("OnClick", handler)
     button:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -58,33 +61,34 @@ local function makeButton(parent, label, tooltip, handler)
 end
 
 local function createFrame()
+    local anchor = _G.CharacterFrame or PaperDollFrame
     local frame = CreateFrame("Frame", "LapidaryCharacterPanel", PaperDollFrame)
-    frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT * 2 + 2)
-    frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", 70, -28)
+    frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT)
+    frame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 4, -4)
 
     frame.outEquipped = makeButton(frame, L.ACTION_REMOVE_ALL, L.TOOLTIP_REMOVE_EQUIPPED, function()
         setBusy(true)
         LapidarySockets:RemoveAll(function() setBusy(false) end, false)
     end)
-    frame.outEquipped:SetPoint("TOPLEFT", 0, 0)
+    frame.outEquipped:SetPoint("LEFT", 0, 0)
 
     frame.inEquipped = makeButton(frame, L.ACTION_INSERT_ALL, L.TOOLTIP_INSERT_EQUIPPED, function()
         setBusy(true)
         LapidarySockets:InsertAll(function() setBusy(false) end, false)
     end)
-    frame.inEquipped:SetPoint("TOPLEFT", frame.outEquipped, "BOTTOMLEFT", 0, -2)
+    frame.inEquipped:SetPoint("LEFT", frame.outEquipped, "RIGHT", 2, 0)
 
     frame.outEverything = makeButton(frame, L.ACTION_REMOVE_EVERYTHING, L.TOOLTIP_REMOVE_EVERYTHING, function()
         setBusy(true)
         LapidarySockets:RemoveAll(function() setBusy(false) end, true)
     end)
-    frame.outEverything:SetPoint("TOPLEFT", frame.outEquipped, "TOPRIGHT", BLOCK_GAP, 0)
+    frame.outEverything:SetPoint("LEFT", frame.inEquipped, "RIGHT", BLOCK_GAP, 0)
 
     frame.inEverything = makeButton(frame, L.ACTION_INSERT_EVERYTHING, L.TOOLTIP_INSERT_EVERYTHING, function()
         setBusy(true)
         LapidarySockets:InsertAll(function() setBusy(false) end, true)
     end)
-    frame.inEverything:SetPoint("TOPLEFT", frame.outEverything, "BOTTOMLEFT", 0, -2)
+    frame.inEverything:SetPoint("LEFT", frame.outEverything, "RIGHT", 2, 0)
 
     frame.buttons = {
         frame.outEquipped, frame.inEquipped,

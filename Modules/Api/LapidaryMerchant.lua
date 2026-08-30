@@ -30,6 +30,16 @@ function LapidaryMerchant:FindIndex(itemId)
     return nil
 end
 
+---@return boolean @True when the interacted NPC is one of the black diamond vendors
+function LapidaryMerchant:IsGemVendor()
+    local guid = UnitGUID("npc") or UnitGUID("target")
+    if not guid then
+        return false
+    end
+    local npcId = tonumber(guid:sub(9, 12), 16)
+    return npcId ~= nil and LapidaryConstants.VENDOR_NPC_IDS[npcId] == true
+end
+
 ---@return boolean @True when the open merchant is the gem-cutting list
 function LapidaryMerchant:IsCuttingVendor()
     if not (MerchantFrame and MerchantFrame:IsShown()) then
@@ -47,7 +57,14 @@ function LapidaryMerchant:IsRestoreVendor()
     if not (MerchantFrame and MerchantFrame:IsShown()) then
         return false
     end
-    return GetMerchantNumItems() == 1 and self:GetItemIdAt(1) == CURRENCY_ID
+    if self:IsCuttingVendor() then
+        return false
+    end
+    if not self:IsGemVendor() then
+        return false
+    end
+    local count = GetMerchantNumItems() or 0
+    return count == 0 or self:GetItemIdAt(1) == CURRENCY_ID
 end
 
 ---@param index number
@@ -102,4 +119,41 @@ end
 ---@return number
 function LapidaryMerchant:GetCurrencyCount()
     return GetItemCount(CURRENCY_ID) or 0
+end
+
+local statCache = {}
+
+---@param itemId number|nil
+---@return string|nil @The "+N to stat" line from the merchant tooltip, cached per item
+function LapidaryMerchant:GetStatText(itemId)
+    if not itemId then
+        return nil
+    end
+    if statCache[itemId] then
+        return statCache[itemId]
+    end
+    local index = self:FindIndex(itemId)
+    if not index then
+        return nil
+    end
+    local tip = _G.LapidaryScanTooltip
+    if not tip then
+        tip = CreateFrame("GameTooltip", "LapidaryScanTooltip", UIParent, "GameTooltipTemplate")
+        tip:SetOwner(UIParent, "ANCHOR_NONE")
+    end
+    tip:ClearLines()
+    tip:SetMerchantItem(index)
+    local parts
+    for line = 2, tip:NumLines() do
+        local fontString = _G["LapidaryScanTooltipTextLeft" .. line]
+        local text = fontString and fontString:GetText()
+        if text and text:find("^%+") then
+            parts = parts and (parts .. ", " .. text) or text
+        end
+    end
+    tip:Hide()
+    if parts then
+        statCache[itemId] = parts
+    end
+    return parts
 end

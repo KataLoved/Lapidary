@@ -7,6 +7,7 @@
 
 Modules\Libs\LapidaryLoader.lua
 Modules\Libs\LapidaryLocale.lua
+Modules\Libs\LapidarySkin.lua
 
 Localization\Localization.xml
 
