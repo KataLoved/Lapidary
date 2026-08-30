@@ -86,7 +86,7 @@ end
 local function createFrame()
     local frame = CreateFrame("Frame", "LapidaryCharacterButtons", UIParent)
     frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT * 2 + BUTTON_GAP)
-    frame:SetFrameStrata("HIGH")
+    frame:SetFrameStrata("DIALOG")
     frame:EnableMouse(true)
     frame:SetMovable(true)
     frame:SetClampedToScreen(true)
@@ -176,10 +176,26 @@ function LapidaryCharacterPanel:Update()
         private.frame = createFrame()
     end
     if PaperDollFrame:IsShown() then
+        self:RaiseAboveModel()
         private.frame:Show()
         self:Refresh()
     else
         private.frame:Hide()
+    end
+end
+
+---The character model frame sits one level above the paper doll and swallows
+---clicks meant for anything drawn over it.
+function LapidaryCharacterPanel:RaiseAboveModel()
+    local frame = private.frame
+    if not frame then
+        return
+    end
+    local model = _G.CharacterModelFrame
+    local level = math.max(model and model:GetFrameLevel() or 0, frame:GetFrameLevel()) + 20
+    frame:SetFrameLevel(level)
+    for _, button in ipairs(frame.buttons) do
+        button:SetFrameLevel(level + 1)
     end
 end
 
