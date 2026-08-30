@@ -29,7 +29,7 @@ function LapidarySlash:Handle(args)
     if command == "toggle" then
         say(handlers.toggle() and L.SLASH_ENABLED or L.SLASH_DISABLED)
     else
-        say(L.SLASH_HELP_TOGGLE)
+        say("/lap toggle — " .. L.SLASH_HELP_TOGGLE)
     end
 end
 

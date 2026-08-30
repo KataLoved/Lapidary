@@ -64,7 +64,7 @@ local function makeButton(parent, label, tooltip, handler)
 end
 
 local function createFrame()
-    local frame = CreateFrame("Frame", "LapidaryCharacterButtons", UIParent)
+    local frame = CreateFrame("Frame", "LapidaryCharacterButtons", PaperDollFrame)
     frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT * 2 + BUTTON_GAP)
     frame:SetFrameStrata("DIALOG")
 
@@ -137,13 +137,9 @@ function LapidaryCharacterPanel:Update()
         end
         private.frame = createFrame()
     end
-    if PaperDollFrame:IsShown() then
-        self:RaiseAboveModel()
-        private.frame:Show()
-        self:Refresh()
-    else
-        private.frame:Hide()
-    end
+    self:RaiseAboveModel()
+    private.frame:Show()
+    self:Refresh()
 end
 
 ---The character model frame sits one level above the paper doll and swallows
@@ -167,11 +163,6 @@ function LapidaryCharacterPanel:ScheduleInstall()
             private.hooked = true
             PaperDollFrame:HookScript("OnShow", function()
                 LapidaryCharacterPanel:Update()
-            end)
-            PaperDollFrame:HookScript("OnHide", function()
-                if private.frame then
-                    private.frame:Hide()
-                end
             end)
         end
         self:Update()
