@@ -4,13 +4,12 @@
 ## Author: NastyaLove
 ## Version: 1.0.0
 ## SavedVariables: LapidaryDB
-## X-Sirus-Category: 15
 
-embeds.xml
+Modules\Libs\LapidaryLoader.lua
+Modules\Libs\LapidaryLocale.lua
 
 Localization\Localization.xml
 
-Modules\Libs\LapidaryLoader.lua
 Modules\Libs\LapidaryTimer.lua
 Modules\Core\LapidaryConstants.lua
 Modules\Core\LapidaryConfig.lua

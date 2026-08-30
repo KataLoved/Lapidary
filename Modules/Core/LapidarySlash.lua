@@ -3,7 +3,7 @@
 local LapidarySlash = LapidaryLoader:CreateModule("LapidarySlash")
 local private = LapidarySlash.private
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Lapidary", true)
+local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local PREFIX = "|cFF9B59B6Lapidary|r: "
 

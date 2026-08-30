@@ -14,7 +14,7 @@ local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Lapidary", true)
+local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local PADDING = 10
 local SPACING = 3

@@ -4,7 +4,7 @@
 
 .DESCRIPTION
     Only what the client actually loads is copied: Lapidary.toc,
-    Lapidary.lua, embeds.xml, Modules/, Libs/, Localization/.
+    Lapidary.lua, Modules/, Localization/.
     Everything else (docs/, *.md, .git, .vscode, deploy.ps1) stays out of the
     game folder.
 
@@ -39,12 +39,10 @@ $Target = Join-Path $GamePath $AddonName
 
 $RootFiles = @(
     'Lapidary.toc',
-    'Lapidary.lua',
-    'embeds.xml'
+    'Lapidary.lua'
 )
 $Folders = @(
     'Modules',
-    'Libs',
     'Localization'
 )
 

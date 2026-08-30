@@ -5,10 +5,10 @@
 Задаётся `Lapidary.toc`. Модуль обязан быть объявлен раньше, чем его импортируют.
 
 ```
-embeds.xml                      LibStub, CallbackHandler-1.0, AceLocale-3.0
 Localization/Localization.xml   enUS, ruRU
 
-Libs/LapidaryLoader        CreateModule / ImportModule / PopulateGlobals
+Libs/LapidaryLoader          CreateModule / ImportModule
+Libs/LapidaryLocale          Register / Get, прокси с фолбэком
 Libs/LapidaryTimer         отложенные вызовы на одном OnUpdate
 
 Core/LapidaryConstants     ID камней, слоты, опкод, дефолты

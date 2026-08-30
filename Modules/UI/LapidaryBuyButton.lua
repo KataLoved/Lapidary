@@ -4,7 +4,7 @@ local LapidaryBuyButton = LapidaryLoader:CreateModule("LapidaryBuyButton")
 ---@type LapidaryMerchant
 local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Lapidary", true)
+local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local function resolveAmount()
     if IsShiftKeyDown() then

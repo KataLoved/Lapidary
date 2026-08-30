@@ -22,7 +22,7 @@ local LapidarySlash = LapidaryLoader:ImportModule("LapidarySlash")
 ---@type LapidaryMerchant
 local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 
-local L = LibStub("AceLocale-3.0"):GetLocale("Lapidary", true)
+local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 function LapidaryBootstrap:BuildStatus()
     local config = LapidaryDatabase:Get()
