@@ -6,6 +6,7 @@
 # Local working files, not part of the addon
 CLAUDE.md
 TODO.md
+docs/
 _backup/
 _publish/
 
