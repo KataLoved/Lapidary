@@ -49,8 +49,13 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     RESTORE_NOTHING = "Огранённых камней в сумках нет",
     RESTORE_NO_GEM = "Торговец не показывает камень к обмену",
 
-    TOOLTIP_REMOVE_ALL = "Вынуть все чёрные бриллианты из надетых вещей и из вещей в сумках",
-    TOOLTIP_INSERT_ALL = "Разложить бриллианты из сумок по свободным гнёздам: мета в мета-гнёзда, крупные вперёд мелких",
+    ACTION_REMOVE_EVERYTHING = "Достать все",
+    ACTION_INSERT_EVERYTHING = "Вставить все",
+
+    TOOLTIP_REMOVE_EQUIPPED = "Вынуть бриллианты только из надетых вещей",
+    TOOLTIP_INSERT_EQUIPPED = "Разложить бриллианты из сумок по свободным гнёздам надетых вещей: мета в мета-гнёзда, крупные вперёд мелких",
+    TOOLTIP_REMOVE_EVERYTHING = "Вынуть бриллианты и из надетых вещей, и из вещей, лежащих в сумках",
+    TOOLTIP_INSERT_EVERYTHING = "Заполнить свободные гнёзда и на надетых вещах, и на вещах в сумках",
 
     TOOLTIP_BUY_ONE = "ЛКМ — купить один",
     TOOLTIP_BUY_TEN = "Shift + ЛКМ — купить десять",
@@ -62,6 +67,7 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     SLASH_HELP_SWAP = "вынуть, затем вставить",
     SLASH_HELP_TOGGLE = "включить или выключить аддон",
     SLASH_HELP_STATUS = "показать текущее состояние",
+    SLASH_HELP_SCOPE = "добавь all к out/in/swap, чтобы захватить и вещи в сумках",
     SLASH_ENABLED = "включён.",
     SLASH_DISABLED = "выключен.",
 

@@ -47,8 +47,9 @@ local function hasLegendaryGem(itemLink)
     return false
 end
 
+---@param includeBags boolean|nil @Also strip items sitting in bags
 ---@return table[] @Removal entries { bag, slot, index }
-function LapidaryGems:CollectSocketed()
+function LapidaryGems:CollectSocketed(includeBags)
     local entries = {}
 
     for _, slotName in ipairs(INVENTORY_SLOTS) do
@@ -67,16 +68,18 @@ function LapidaryGems:CollectSocketed()
         end
     end
 
-    for bag = 0, NUM_BAG_SLOTS do
-        for slot = 1, GetContainerNumSlots(bag) do
-            local itemLink = GetContainerItemLink(bag, slot)
-            if itemLink then
-                for index = 1, MAX_SOCKETS do
-                    local _, gemLink = GetItemGem(itemLink, index)
-                    if gemLink then
-                        local _, _, quality = GetItemInfo(gemLink)
-                        if quality == LEGENDARY then
-                            entries[#entries + 1] = { bag = bag, slot = slot, index = index }
+    if includeBags then
+        for bag = 0, NUM_BAG_SLOTS do
+            for slot = 1, GetContainerNumSlots(bag) do
+                local itemLink = GetContainerItemLink(bag, slot)
+                if itemLink then
+                    for index = 1, MAX_SOCKETS do
+                        local _, gemLink = GetItemGem(itemLink, index)
+                        if gemLink then
+                            local _, _, quality = GetItemInfo(gemLink)
+                            if quality == LEGENDARY then
+                                entries[#entries + 1] = { bag = bag, slot = slot, index = index }
+                            end
                         end
                     end
                 end
@@ -103,15 +106,30 @@ function LapidaryGems:CollectLoose()
     return pools
 end
 
----@return number[] @Equipped slot ids that currently hold an item
-function LapidaryGems:GetOccupiedSlots()
-    local slots = {}
+---@param includeBags boolean|nil @Also target equippable items sitting in bags
+---@return table[] @Targets { equipped = slotId } or { bag = b, slot = s }
+function LapidaryGems:GetSocketTargets(includeBags)
+    local targets = {}
     for slotId = LapidaryConstants.EQUIPPED_SLOT_MIN, LapidaryConstants.EQUIPPED_SLOT_MAX do
         if GetInventoryItemLink("player", slotId) then
-            slots[#slots + 1] = slotId
+            targets[#targets + 1] = { equipped = slotId }
         end
     end
-    return slots
+    if not includeBags then
+        return targets
+    end
+    for bag = 0, NUM_BAG_SLOTS do
+        for slot = 1, GetContainerNumSlots(bag) do
+            local itemLink = GetContainerItemLink(bag, slot)
+            if itemLink then
+                local equipSlot = select(9, GetItemInfo(itemLink))
+                if equipSlot and equipSlot ~= "" and equipSlot ~= "INVTYPE_BAG" then
+                    targets[#targets + 1] = { bag = bag, slot = slot }
+                end
+            end
+        end
+    end
+    return targets
 end
 
 ---@return boolean

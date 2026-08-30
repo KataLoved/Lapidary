@@ -24,14 +24,16 @@ function LapidarySlash:Handle(args)
     if not handlers then
         return
     end
-    local command = strlower(strsplit(" ", args or "") or "")
+    local command, scope = strsplit(" ", args or "", 2)
+    command = strlower(command or "")
+    local everything = strlower(scope or "") == "all"
 
     if command == "out" then
-        handlers.removeAll()
+        handlers.removeAll(everything)
     elseif command == "in" then
-        handlers.insertAll()
+        handlers.insertAll(everything)
     elseif command == "swap" then
-        handlers.swapAll()
+        handlers.swapAll(everything)
     elseif command == "toggle" then
         say(handlers.toggle() and L["SLASH_ENABLED"] or L["SLASH_DISABLED"])
     elseif command == "status" then
@@ -45,6 +47,7 @@ function LapidarySlash:Handle(args)
         print("  /lap swap   -- " .. L["SLASH_HELP_SWAP"])
         print("  /lap toggle -- " .. L["SLASH_HELP_TOGGLE"])
         print("  /lap status -- " .. L["SLASH_HELP_STATUS"])
+        print("  " .. L["SLASH_HELP_SCOPE"])
     end
 end
 

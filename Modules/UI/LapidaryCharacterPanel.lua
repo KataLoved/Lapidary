@@ -15,81 +15,104 @@ local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local BUTTON_WIDTH = 74
-local BUTTON_HEIGHT = 21
+local BUTTON_HEIGHT = 17
+local BLOCK_GAP = 12
 
 local function setBusy(busy)
     local frame = private.frame
     if not frame then
         return
     end
+    private.busy = busy
     if busy then
-        frame.out:Disable()
-        frame.insert:Disable()
+        for _, b in ipairs(frame.buttons) do
+            b:Disable()
+        end
     else
-        frame.out:Enable()
-        frame.insert:Enable()
+        LapidaryCharacterPanel:Refresh()
     end
+end
+
+---@param parent table
+---@param label string
+---@param tooltip string
+---@param handler fun()
+local function makeButton(parent, label, tooltip, handler)
+    local button = CreateFrame("Button", nil, parent, "UIPanelButtonTemplate")
+    button:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
+    button:SetText(label)
+    local fontString = button:GetFontString()
+    if fontString then
+        fontString:SetFontObject("GameFontNormalSmall")
+    end
+    button:SetScript("OnClick", handler)
+    button:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(tooltip, 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    button:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+    return button
 end
 
 local function createFrame()
     local frame = CreateFrame("Frame", "LapidaryCharacterPanel", PaperDollFrame)
-    frame:SetSize(BUTTON_WIDTH * 2 + 4, BUTTON_HEIGHT)
-    frame:SetPoint("BOTTOMLEFT", PaperDollFrame, "BOTTOMLEFT", 72, 82)
+    frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT * 2 + 2)
+    frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", 70, -28)
 
-    frame.out = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.out:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-    frame.out:SetPoint("LEFT", 0, 0)
-    frame.out:SetText(L.ACTION_REMOVE_ALL)
-    frame.out:SetScript("OnClick", function()
+    frame.outEquipped = makeButton(frame, L.ACTION_REMOVE_ALL, L.TOOLTIP_REMOVE_EQUIPPED, function()
         setBusy(true)
-        LapidarySockets:RemoveAll(function()
-            setBusy(false)
-        end)
+        LapidarySockets:RemoveAll(function() setBusy(false) end, false)
     end)
-    frame.out:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine(L.TOOLTIP_REMOVE_ALL, 1, 1, 1, true)
-        GameTooltip:Show()
-    end)
-    frame.out:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    frame.outEquipped:SetPoint("TOPLEFT", 0, 0)
 
-    frame.insert = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.insert:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT)
-    frame.insert:SetPoint("LEFT", frame.out, "RIGHT", 4, 0)
-    frame.insert:SetText(L.ACTION_INSERT_ALL)
-    frame.insert:SetScript("OnClick", function()
+    frame.inEquipped = makeButton(frame, L.ACTION_INSERT_ALL, L.TOOLTIP_INSERT_EQUIPPED, function()
         setBusy(true)
-        LapidarySockets:InsertAll(function()
-            setBusy(false)
-        end)
+        LapidarySockets:InsertAll(function() setBusy(false) end, false)
     end)
-    frame.insert:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-        GameTooltip:AddLine(L.TOOLTIP_INSERT_ALL, 1, 1, 1, true)
-        GameTooltip:Show()
-    end)
-    frame.insert:SetScript("OnLeave", function() GameTooltip:Hide() end)
+    frame.inEquipped:SetPoint("TOPLEFT", frame.outEquipped, "BOTTOMLEFT", 0, -2)
 
+    frame.outEverything = makeButton(frame, L.ACTION_REMOVE_EVERYTHING, L.TOOLTIP_REMOVE_EVERYTHING, function()
+        setBusy(true)
+        LapidarySockets:RemoveAll(function() setBusy(false) end, true)
+    end)
+    frame.outEverything:SetPoint("TOPLEFT", frame.outEquipped, "TOPRIGHT", BLOCK_GAP, 0)
+
+    frame.inEverything = makeButton(frame, L.ACTION_INSERT_EVERYTHING, L.TOOLTIP_INSERT_EVERYTHING, function()
+        setBusy(true)
+        LapidarySockets:InsertAll(function() setBusy(false) end, true)
+    end)
+    frame.inEverything:SetPoint("TOPLEFT", frame.outEverything, "BOTTOMLEFT", 0, -2)
+
+    frame.buttons = {
+        frame.outEquipped, frame.inEquipped,
+        frame.outEverything, frame.inEverything,
+    }
     return frame
 end
 
 function LapidaryCharacterPanel:Refresh()
     local frame = private.frame
-    if not frame or not frame:IsShown() then
+    if not frame or not frame:IsShown() or private.busy then
         return
     end
+
     local pools = LapidaryGems:CollectLoose()
     local loose = #pools.meta + #pools.big + #pools.small
-    if loose > 0 then
-        frame.insert:Enable()
-    else
-        frame.insert:Disable()
+
+    local equippedGems = #LapidaryGems:CollectSocketed(false)
+    local everythingGems = #LapidaryGems:CollectSocketed(true)
+
+    local function toggle(button, enabled)
+        if enabled then button:Enable() else button:Disable() end
     end
-    if LapidaryGems:HasSocketedLegendary() then
-        frame.out:Enable()
-    else
-        frame.out:Disable()
-    end
+
+    toggle(frame.outEquipped, equippedGems > 0)
+    toggle(frame.outEverything, everythingGems > 0)
+    toggle(frame.inEquipped, loose > 0)
+    toggle(frame.inEverything, loose > 0)
 end
 
 function LapidaryCharacterPanel:Update()
@@ -112,6 +135,12 @@ end
 
 function LapidaryCharacterPanel:ScheduleInstall()
     if PaperDollFrame then
+        if not private.hooked then
+            private.hooked = true
+            PaperDollFrame:HookScript("OnShow", function()
+                LapidaryCharacterPanel:Refresh()
+            end)
+        end
         self:Update()
         return
     end

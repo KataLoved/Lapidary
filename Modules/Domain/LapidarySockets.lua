@@ -19,17 +19,24 @@ local function poolsEmpty(pools)
 end
 
 local function takeFrom(pool)
-    local entry = table.remove(pool, 1)
-    return entry
+    return table.remove(pool, 1)
 end
 
-local function fillSlot(payload)
+local function openTarget(target)
+    if target.equipped then
+        SocketInventoryItem(target.equipped)
+    else
+        SocketContainerItem(target.bag, target.slot)
+    end
+end
+
+local function fillTarget(payload)
     local pools = payload.pools
     if poolsEmpty(pools) then
         return
     end
 
-    SocketInventoryItem(payload.slotId)
+    openTarget(payload.target)
     local total = GetNumSockets()
     if not total or total < 1 then
         HideUIPanel(ItemSocketingFrame)
@@ -61,14 +68,16 @@ local function fillSlot(payload)
 end
 
 ---@param onDone fun(success:boolean)|nil
-function LapidarySockets:RemoveAll(onDone)
-    local entries = LapidaryGems:CollectSocketed()
+---@param includeBags boolean|nil
+function LapidarySockets:RemoveAll(onDone, includeBags)
+    local entries = LapidaryGems:CollectSocketed(includeBags)
     private.lastRemovedCount = #entries
     LapidaryServer:RemoveSockets(entries, onDone)
 end
 
 ---@param onDone fun()|nil
-function LapidarySockets:InsertAll(onDone)
+---@param includeBags boolean|nil
+function LapidarySockets:InsertAll(onDone, includeBags)
     local pools = LapidaryGems:CollectLoose()
     if poolsEmpty(pools) then
         if onDone then
@@ -77,26 +86,27 @@ function LapidarySockets:InsertAll(onDone)
         return
     end
 
-    local slots = LapidaryGems:GetOccupiedSlots()
-    private.lastInsertSlots = #slots
+    local targets = LapidaryGems:GetSocketTargets(includeBags)
+    private.lastInsertTargets = #targets
 
-    for i = 1, #slots do
-        LapidaryTimer:After(STEP * i, fillSlot, { slotId = slots[i], pools = pools })
+    for i = 1, #targets do
+        LapidaryTimer:After(STEP * i, fillTarget, { target = targets[i], pools = pools })
     end
 
     if onDone then
-        LapidaryTimer:After(STEP * (#slots + 1), onDone)
+        LapidaryTimer:After(STEP * (#targets + 1), onDone)
     end
 end
 
 ---@param onDone fun()|nil
-function LapidarySockets:SwapAll(onDone)
+---@param includeBags boolean|nil
+function LapidarySockets:SwapAll(onDone, includeBags)
     self:RemoveAll(function()
-        self:InsertAll(onDone)
-    end)
+        self:InsertAll(onDone, includeBags)
+    end, includeBags)
 end
 
 ---@return number|nil, number|nil
 function LapidarySockets:GetLastCounts()
-    return private.lastRemovedCount, private.lastInsertSlots
+    return private.lastRemovedCount, private.lastInsertTargets
 end

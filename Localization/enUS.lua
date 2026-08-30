@@ -49,8 +49,13 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     RESTORE_NOTHING = "No cut gems in bags",
     RESTORE_NO_GEM = "The vendor shows no gem to trade in",
 
-    TOOLTIP_REMOVE_ALL = "Take every black diamond out of equipped items and items in bags",
-    TOOLTIP_INSERT_ALL = "Fill free sockets from bags: meta into meta sockets, big gems before small ones",
+    ACTION_REMOVE_EVERYTHING = "Take out all",
+    ACTION_INSERT_EVERYTHING = "Insert all",
+
+    TOOLTIP_REMOVE_EQUIPPED = "Take diamonds out of equipped items only",
+    TOOLTIP_INSERT_EQUIPPED = "Fill free sockets on equipped items from bags: meta into meta sockets, big gems before small ones",
+    TOOLTIP_REMOVE_EVERYTHING = "Take diamonds out of equipped items and out of items sitting in bags",
+    TOOLTIP_INSERT_EVERYTHING = "Fill free sockets on equipped items and on items sitting in bags",
 
     TOOLTIP_BUY_ONE = "Left click - buy one",
     TOOLTIP_BUY_TEN = "Shift + left click - buy ten",
@@ -62,6 +67,7 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     SLASH_HELP_SWAP = "take out, then insert",
     SLASH_HELP_TOGGLE = "enable or disable the addon",
     SLASH_HELP_STATUS = "print current state",
+    SLASH_HELP_SCOPE = "append all to out/in/swap to include items sitting in bags",
     SLASH_ENABLED = "enabled.",
     SLASH_DISABLED = "disabled.",
 

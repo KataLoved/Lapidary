@@ -38,14 +38,14 @@ end
 
 function LapidaryBootstrap:RegisterSlash()
     LapidarySlash:Register({
-        removeAll = function()
-            LapidarySockets:RemoveAll()
+        removeAll = function(everything)
+            LapidarySockets:RemoveAll(nil, everything)
         end,
-        insertAll = function()
-            LapidarySockets:InsertAll()
+        insertAll = function(everything)
+            LapidarySockets:InsertAll(nil, everything)
         end,
-        swapAll = function()
-            LapidarySockets:SwapAll()
+        swapAll = function(everything)
+            LapidarySockets:SwapAll(nil, everything)
         end,
         toggle = function()
             local config = LapidaryDatabase:Get()

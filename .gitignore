@@ -16,3 +16,7 @@ desktop.ini
 
 # Reference dump of the WeakAura this addon replaces
 WeakAuras.lua
+
+# Reference screenshots from the user
+image.png
+*.png
