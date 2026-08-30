@@ -3,6 +3,8 @@ local LapidaryMerchant = LapidaryLoader:CreateModule("LapidaryMerchant")
 
 ---@type LapidaryConstants
 local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
+---@type LapidaryGems
+local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
 
 local CURRENCY_ID = LapidaryConstants.CURRENCY_ID
 
@@ -53,6 +55,10 @@ function LapidaryMerchant:IsGemVendor()
     return rememberedGemVendor
 end
 
+local SAMPLE_SIZE = 5
+
+---Identified by what the merchant sells, not by which NPC it is: the personal
+---assistant offers the gem service alongside pets and fishing gear.
 ---@return boolean @True when the open merchant is the gem-cutting list
 function LapidaryMerchant:IsCuttingVendor()
     if not (MerchantFrame and MerchantFrame:IsShown()) then
@@ -62,7 +68,18 @@ function LapidaryMerchant:IsCuttingVendor()
     if not count or count < 2 then
         return false
     end
-    return self:GetItemIdAt(1) ~= CURRENCY_ID
+
+    local checked, gems = 0, 0
+    for index = 1, math.min(count, SAMPLE_SIZE) do
+        local itemId = self:GetItemIdAt(index)
+        if itemId then
+            checked = checked + 1
+            if itemId ~= CURRENCY_ID and LapidaryGems:Classify(itemId) then
+                gems = gems + 1
+            end
+        end
+    end
+    return checked > 0 and gems == checked
 end
 
 ---@return boolean @True when the open merchant is the "return to base gem" list
