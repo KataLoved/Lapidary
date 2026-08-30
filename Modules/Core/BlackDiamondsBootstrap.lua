@@ -62,6 +62,7 @@ end
 function BlackDiamondsBootstrap:OnPlayerLogin()
     local frame = private.frame
 
+    private.charKey = (UnitName("player") or "?") .. " - " .. (GetRealmName() or "?")
     BlackDiamondsDatabase:Open(private.charKey)
     BlackDiamondsServer:Initialize()
 
@@ -101,7 +102,6 @@ function BlackDiamondsBootstrap:Start(frame, addonName)
     private.addonName = addonName
     private.loaded = false
     private.started = false
-    private.charKey = UnitName("player") .. " - " .. GetRealmName()
 
     BlackDiamondsEventHandler:RegisterEarlyEvents(frame)
     frame:SetScript("OnEvent", function(_, event, ...)

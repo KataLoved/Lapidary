@@ -36,7 +36,7 @@ local function createActionButton(parent, text, width, onClick)
 end
 
 local function buildBody(frame)
-    local config = BlackDiamondsDatabase:Get()
+    local config = BlackDiamondsDatabase:Get() or BlackDiamondsConstants.DEFAULTS
     local size = config.buttonSize
     local perRow = config.buttonsPerRow
     local width = perRow * (size + SPACING) - SPACING
@@ -77,7 +77,7 @@ local function buildBody(frame)
 end
 
 local function createFrame()
-    local frame = CreateFrame("Frame", "BlackDiamondsVendorFrame", MerchantFrame)
+    local frame = CreateFrame("Frame", "BlackDiamondsVendorPanel", MerchantFrame)
     frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", -4, -12)
     frame:SetFrameStrata("HIGH")
 
