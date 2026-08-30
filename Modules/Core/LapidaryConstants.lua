@@ -10,6 +10,13 @@ LapidaryConstants.VENDOR_NPC_IDS = {
     [13499] = true,
 }
 
+---The personal assistant carries the gem service among many others and is
+---matched by name, the way the WeakAura did: its id is not in the list above.
+LapidaryConstants.VENDOR_NAMES = {
+    ["Персональный ассистент"] = true,
+    ["Personal assistant"] = true,
+}
+
 LapidaryConstants.INVENTORY_SLOTS = {
     "HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "WristSlot",
     "HandsSlot", "WaistSlot", "LegsSlot", "FeetSlot", "Finger0Slot", "Finger1Slot",

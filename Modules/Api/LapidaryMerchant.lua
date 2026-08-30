@@ -38,6 +38,13 @@ local rememberedGemVendor = false
 ---updates can fire with no unit available.
 function LapidaryMerchant:RememberVendor()
     rememberedGemVendor = false
+
+    local name = UnitName("npc") or UnitName("target")
+    if name and LapidaryConstants.VENDOR_NAMES[name] then
+        rememberedGemVendor = true
+        return
+    end
+
     local guid = UnitGUID("npc") or UnitGUID("target")
     if not guid then
         return
