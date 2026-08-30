@@ -45,10 +45,7 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     RESTORE_TITLE = "Вернуть в исходный",
     RESTORE_COST = "Нажми на камень, чтобы вернуть его в исходный:",
     RESTORE_ROW_HINT = "ЛКМ — вернуть этот камень в исходный",
-    RESTORE_BUTTON = "Вернуть",
-    RESTORE_IN_BAGS = "Огранённые камни в сумках:",
     RESTORE_NOTHING = "Огранённых камней в сумках нет",
-    RESTORE_NO_GEM = "Торговец не показывает камень к обмену",
 
     ACTION_REMOVE_EVERYTHING = "Достать все",
     ACTION_INSERT_EVERYTHING = "Вставить все",
@@ -62,15 +59,7 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     TOOLTIP_BUY_TEN = "Shift + ЛКМ — купить десять",
     TOOLTIP_BUY_ALL = "Ctrl + ЛКМ — купить столько, на сколько хватит",
 
-    SLASH_HELP_HEADER = "команды:",
-    SLASH_HELP_OUT = "вынуть все легендарные камни",
-    SLASH_HELP_IN = "вставить камни из сумок в свободные гнёзда",
-    SLASH_HELP_SWAP = "вынуть, затем вставить",
     SLASH_HELP_TOGGLE = "включить или выключить аддон",
-    SLASH_HELP_STATUS = "показать текущее состояние",
-    SLASH_HELP_SCOPE = "добавь all к out/in/swap, чтобы захватить и вещи в сумках",
-    SLASH_HELP_RESETPOS = "вернуть панель кнопок на место",
-    SLASH_POS_RESET = "позиция панели сброшена.",
     SLASH_ENABLED = "включён.",
     SLASH_DISABLED = "выключен.",
 

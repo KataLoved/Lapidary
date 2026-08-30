@@ -5,7 +5,7 @@ local private = LapidarySlash.private
 
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
-local PREFIX = "|cFF9B59B6Lapidary|r: "
+local PREFIX = "|cFFFF8000Lapidary|r: "
 
 local function say(message)
     print(PREFIX .. message)
@@ -24,34 +24,12 @@ function LapidarySlash:Handle(args)
     if not handlers then
         return
     end
-    local command, scope = strsplit(" ", args or "", 2)
-    command = strlower(command or "")
-    local everything = strlower(scope or "") == "all"
+    local command = strlower(strsplit(" ", args or "") or "")
 
-    if command == "out" then
-        handlers.removeAll(everything)
-    elseif command == "in" then
-        handlers.insertAll(everything)
-    elseif command == "swap" then
-        handlers.swapAll(everything)
-    elseif command == "toggle" then
-        say(handlers.toggle() and L["SLASH_ENABLED"] or L["SLASH_DISABLED"])
-    elseif command == "resetpos" then
-        handlers.resetPos()
-        say(L.SLASH_POS_RESET)
-    elseif command == "status" then
-        for _, line in ipairs(handlers.status()) do
-            say(line)
-        end
+    if command == "toggle" then
+        say(handlers.toggle() and L.SLASH_ENABLED or L.SLASH_DISABLED)
     else
-        say(L["SLASH_HELP_HEADER"])
-        print("  /lap out    -- " .. L["SLASH_HELP_OUT"])
-        print("  /lap in     -- " .. L["SLASH_HELP_IN"])
-        print("  /lap swap   -- " .. L["SLASH_HELP_SWAP"])
-        print("  /lap toggle -- " .. L["SLASH_HELP_TOGGLE"])
-        print("  /lap status   -- " .. L["SLASH_HELP_STATUS"])
-        print("  /lap resetpos -- " .. L["SLASH_HELP_RESETPOS"])
-        print("  " .. L["SLASH_HELP_SCOPE"])
+        say(L.SLASH_HELP_TOGGLE)
     end
 end
 

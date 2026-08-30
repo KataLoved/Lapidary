@@ -38,26 +38,6 @@ local function setBusy(busy)
     end
 end
 
-local function savePosition(frame)
-    local config = LapidaryDatabase:Get()
-    if not config then
-        return
-    end
-    local point, _, relativePoint, x, y = frame:GetPoint(1)
-    config.charPanelPos = { point = point, relativePoint = relativePoint, x = x, y = y }
-end
-
-local function restorePosition(frame)
-    local config = LapidaryDatabase:Get()
-    local saved = config and config.charPanelPos
-    frame:ClearAllPoints()
-    if saved and saved.point then
-        frame:SetPoint(saved.point, UIParent, saved.relativePoint, saved.x, saved.y)
-    else
-        frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", DEFAULT_X, DEFAULT_Y)
-    end
-end
-
 ---@param parent table
 ---@param label string
 ---@param tooltip string
@@ -87,15 +67,7 @@ local function createFrame()
     local frame = CreateFrame("Frame", "LapidaryCharacterButtons", UIParent)
     frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT * 2 + BUTTON_GAP)
     frame:SetFrameStrata("DIALOG")
-    frame:EnableMouse(true)
-    frame:SetMovable(true)
-    frame:SetClampedToScreen(true)
-    frame:RegisterForDrag("LeftButton")
-    frame:SetScript("OnDragStart", function(self) self:StartMoving() end)
-    frame:SetScript("OnDragStop", function(self)
-        self:StopMovingOrSizing()
-        savePosition(self)
-    end)
+
 
     frame.outEquipped = makeButton(frame, L.ACTION_REMOVE_ALL, L.TOOLTIP_REMOVE_EQUIPPED, function()
         setBusy(true)
@@ -126,18 +98,8 @@ local function createFrame()
         frame.outEverything, frame.inEverything,
     }
 
-    restorePosition(frame)
+    frame:SetPoint("TOPLEFT", PaperDollFrame, "TOPLEFT", DEFAULT_X, DEFAULT_Y)
     return frame
-end
-
-function LapidaryCharacterPanel:ResetPosition()
-    local config = LapidaryDatabase:Get()
-    if config then
-        config.charPanelPos = nil
-    end
-    if private.frame then
-        restorePosition(private.frame)
-    end
 end
 
 function LapidaryCharacterPanel:Refresh()

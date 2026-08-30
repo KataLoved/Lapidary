@@ -45,10 +45,7 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     RESTORE_TITLE = "Return to base gem",
     RESTORE_COST = "Click a gem to turn it back into a base diamond:",
     RESTORE_ROW_HINT = "Left click - turn this gem back into a base diamond",
-    RESTORE_BUTTON = "Return",
-    RESTORE_IN_BAGS = "Cut gems in bags:",
     RESTORE_NOTHING = "No cut gems in bags",
-    RESTORE_NO_GEM = "The vendor shows no gem to trade in",
 
     ACTION_REMOVE_EVERYTHING = "Take out all",
     ACTION_INSERT_EVERYTHING = "Insert all",
@@ -62,15 +59,7 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     TOOLTIP_BUY_TEN = "Shift + left click - buy ten",
     TOOLTIP_BUY_ALL = "Ctrl + left click - buy as many as you can afford",
 
-    SLASH_HELP_HEADER = "commands:",
-    SLASH_HELP_OUT = "take every legendary gem out",
-    SLASH_HELP_IN = "insert gems from bags into free sockets",
-    SLASH_HELP_SWAP = "take out, then insert",
     SLASH_HELP_TOGGLE = "enable or disable the addon",
-    SLASH_HELP_STATUS = "print current state",
-    SLASH_HELP_SCOPE = "append all to out/in/swap to include items sitting in bags",
-    SLASH_HELP_RESETPOS = "move the button bar back to its default spot",
-    SLASH_POS_RESET = "button bar position reset.",
     SLASH_ENABLED = "enabled.",
     SLASH_DISABLED = "disabled.",
 

@@ -58,9 +58,38 @@ function LapidaryEventHandler:BindHandlers(frame)
     frame.SOCKET_INFO_UPDATE = frame.BAG_UPDATE
 end
 
-function LapidaryEventHandler:OnAddonReady(frame)
+local LATE_EVENTS = {
+    "MERCHANT_SHOW", "MERCHANT_CLOSED", "MERCHANT_UPDATE",
+    "BAG_UPDATE", "SOCKET_INFO_UPDATE",
+}
+
+---Drops every gameplay subscription so a disabled addon costs nothing.
+function LapidaryEventHandler:Disable()
+    local frame = private.frame
+    if not frame then
+        return
+    end
+    for _, event in ipairs(LATE_EVENTS) do
+        frame:UnregisterEvent(event)
+    end
+    LapidaryVendorFrame:Hide()
+    LapidaryRestoreFrame:Hide()
+    LapidaryCharacterPanel:Update()
+end
+
+function LapidaryEventHandler:Enable()
+    local frame = private.frame
+    if not frame then
+        return
+    end
     self:RegisterLateEvents(frame)
+    LapidaryCharacterPanel:Update()
+end
+
+function LapidaryEventHandler:OnAddonReady(frame)
+    private.frame = frame
     self:BindHandlers(frame)
+    self:RegisterLateEvents(frame)
     LapidaryEquipSet:ScheduleInstall()
     LapidaryCharacterPanel:ScheduleInstall()
 end

@@ -40,26 +40,15 @@ end
 
 function LapidaryBootstrap:RegisterSlash()
     LapidarySlash:Register({
-        removeAll = function(everything)
-            LapidarySockets:RemoveAll(nil, everything)
-        end,
-        insertAll = function(everything)
-            LapidarySockets:InsertAll(nil, everything)
-        end,
-        swapAll = function(everything)
-            LapidarySockets:SwapAll(nil, everything)
-        end,
         toggle = function()
             local config = LapidaryDatabase:Get()
             config.enabled = not config.enabled
-            LapidaryVendorFrame:Update()
+            if config.enabled then
+                LapidaryEventHandler:Enable()
+            else
+                LapidaryEventHandler:Disable()
+            end
             return config.enabled
-        end,
-        resetPos = function()
-            LapidaryCharacterPanel:ResetPosition()
-        end,
-        status = function()
-            return LapidaryBootstrap:BuildStatus()
         end,
     })
 end
