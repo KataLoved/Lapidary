@@ -71,7 +71,7 @@ local function buildBody(frame)
 end
 
 local function createFrame()
-    local frame = CreateFrame("Frame", "LapidaryVendorPanel", MerchantFrame)
+    local frame = CreateFrame("Frame", "LapidaryVendorPanel", UIParent)
     frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", GAP_FROM_MERCHANT, 0)
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)

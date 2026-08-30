@@ -144,26 +144,17 @@ end
 
 local statCache = {}
 
----@param itemId number|nil
----@return string|nil @The "+N to stat" line from the merchant tooltip, cached per item
-function LapidaryMerchant:GetStatText(itemId)
-    if not itemId then
-        return nil
-    end
-    if statCache[itemId] then
-        return statCache[itemId]
-    end
-    local index = self:FindIndex(itemId)
-    if not index then
-        return nil
-    end
+local function scanTooltip()
     local tip = _G.LapidaryScanTooltip
     if not tip then
         tip = CreateFrame("GameTooltip", "LapidaryScanTooltip", UIParent, "GameTooltipTemplate")
     end
     tip:SetOwner(UIParent, "ANCHOR_NONE")
     tip:ClearLines()
-    tip:SetMerchantItem(index)
+    return tip
+end
+
+local function collectPlusLines(tip)
     local parts
     for line = 2, tip:NumLines() do
         local fontString = _G["LapidaryScanTooltipTextLeft" .. line]
@@ -172,6 +163,56 @@ function LapidaryMerchant:GetStatText(itemId)
             parts = parts and (parts .. ", " .. text) or text
         end
     end
+    return parts
+end
+
+---Reads the stat line straight off the item, so it works away from the vendor.
+---@param itemId number|nil
+---@return string|nil
+function LapidaryMerchant:GetItemStatText(itemId)
+    if not itemId then
+        return nil
+    end
+    if statCache[itemId] then
+        return statCache[itemId]
+    end
+    local tip = scanTooltip()
+    tip:SetHyperlink("item:" .. itemId)
+    local parts = collectPlusLines(tip)
+    if parts then
+        statCache[itemId] = parts
+    end
+    return parts
+end
+
+---@param gemId number|nil
+---@return number|nil @Merchant index whose trade-in cost is this gem
+function LapidaryMerchant:FindRestoreIndexForGem(gemId)
+    if not gemId or not self:IsRestoreVendor() then
+        return nil
+    end
+    for index = 1, GetMerchantNumItems() do
+        if self:GetAltCost(index) == gemId then
+            return index
+        end
+    end
+    return nil
+end
+
+---@param itemId number|nil
+---@return string|nil @The "+N to stat" line, cached per item
+function LapidaryMerchant:GetStatText(itemId)
+    local fromItem = self:GetItemStatText(itemId)
+    if fromItem then
+        return fromItem
+    end
+    local index = self:FindIndex(itemId)
+    if not index then
+        return nil
+    end
+    local tip = scanTooltip()
+    tip:SetMerchantItem(index)
+    local parts = collectPlusLines(tip)
     if parts then
         statCache[itemId] = parts
     end

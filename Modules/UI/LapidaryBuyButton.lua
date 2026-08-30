@@ -92,6 +92,8 @@ function LapidaryBuyButton:Create(parent, entry, width, height)
     row.label:SetPoint("LEFT", TEXT_LEFT, 0)
     row.label:SetWidth(width - TEXT_LEFT - COUNT_WIDTH)
     row.label:SetJustifyH("LEFT")
+    local fontPath, fontSize, fontFlags = row.label:GetFont()
+    row.label:SetFont(fontPath, fontSize - 1, fontFlags)
     if row.label.SetWordWrap then
         row.label:SetWordWrap(false)
     end

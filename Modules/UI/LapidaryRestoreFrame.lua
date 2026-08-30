@@ -64,6 +64,8 @@ local function acquireRow(frame, index)
     row.label:SetPoint("LEFT", ICON + 6, 0)
     row.label:SetPoint("RIGHT", -60, 0)
     row.label:SetJustifyH("LEFT")
+    local fontPath, fontSize, fontFlags = row.label:GetFont()
+    row.label:SetFont(fontPath, fontSize - 1, fontFlags)
 
     row.price = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
     row.price:SetPoint("RIGHT", -2, 0)
@@ -78,7 +80,7 @@ local function acquireRow(frame, index)
 end
 
 local function createFrame()
-    local frame = CreateFrame("Frame", "LapidaryRestorePanel", MerchantFrame)
+    local frame = CreateFrame("Frame", "LapidaryRestorePanel", UIParent)
     frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", GAP_FROM_MERCHANT, 0)
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
@@ -151,8 +153,12 @@ function LapidaryRestoreFrame:Refresh()
         row.merchantIndex = entry.index
         row.gemId = entry.gemId
         row.icon:SetTexture(entry.gemId and GetItemIcon(entry.gemId) or nil)
-        row.label:SetText(entry.gemId and (GetItemInfo(entry.gemId) or ("item:" .. entry.gemId)) or "?")
-        row.price:SetText(GetCoinTextureString(entry.gold or 0))
+        local stats = LapidaryMerchant:GetItemStatText(entry.gemId)
+        row.label:SetText(stats or (entry.gemId and GetItemInfo(entry.gemId)) or "?")
+        local owned = entry.gemId and GetItemCount(entry.gemId) or 0
+        row.price:SetText(owned > 1
+            and string.format("x%d  %s", owned, GetCoinTextureString(entry.gold or 0))
+            or GetCoinTextureString(entry.gold or 0))
         row:Show()
         y = y - ROW_HEIGHT
     end

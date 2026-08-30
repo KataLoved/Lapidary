@@ -64,7 +64,7 @@ local function createFrame()
     local anchor = _G.CharacterFrame or PaperDollFrame
     local frame = CreateFrame("Frame", "LapidaryCharacterPanel", PaperDollFrame)
     frame:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT * 4 + BLOCK_GAP + 4)
-    frame:SetPoint("TOPRIGHT", anchor, "TOPLEFT", -6, -18)
+    frame:SetPoint("TOPLEFT", anchor, "BOTTOMRIGHT", -BUTTON_WIDTH, -6)
 
     frame.outEquipped = makeButton(frame, L.ACTION_REMOVE_ALL, L.TOOLTIP_REMOVE_EQUIPPED, function()
         setBusy(true)
