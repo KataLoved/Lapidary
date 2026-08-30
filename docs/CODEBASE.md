@@ -2,40 +2,40 @@
 
 ## Порядок загрузки
 
-Задаётся `BlackDiamonds.toc`. Модуль обязан быть объявлен раньше, чем его импортируют.
+Задаётся `Lapidary.toc`. Модуль обязан быть объявлен раньше, чем его импортируют.
 
 ```
 embeds.xml                      LibStub, CallbackHandler-1.0, AceLocale-3.0
 Localization/Localization.xml   enUS, ruRU
 
-Libs/BlackDiamondsLoader        CreateModule / ImportModule / PopulateGlobals
-Libs/BlackDiamondsTimer         отложенные вызовы на одном OnUpdate
+Libs/LapidaryLoader        CreateModule / ImportModule / PopulateGlobals
+Libs/LapidaryTimer         отложенные вызовы на одном OnUpdate
 
-Core/BlackDiamondsConstants     ID камней, слоты, опкод, дефолты
-Core/BlackDiamondsConfig        доступ к дефолтам и группам камней
-Core/BlackDiamondsDatabase      BlackDiamondsDB, профиль по "Имя - Реалм"
-Core/BlackDiamondsRuntime       контекст сессии
+Core/LapidaryConstants     ID камней, слоты, опкод, дефолты
+Core/LapidaryConfig        доступ к дефолтам и группам камней
+Core/LapidaryDatabase      LapidaryDB, профиль по "Имя - Реалм"
+Core/LapidaryRuntime       контекст сессии
 
-Api/BlackDiamondsServer         очередь ACMSG_REMOVE_SOCKET_FROM_ITEM
-Api/BlackDiamondsMerchant       поиск товара по ID, определение ветки вендора
+Api/LapidaryServer         очередь ACMSG_REMOVE_SOCKET_FROM_ITEM
+Api/LapidaryMerchant       поиск товара по ID, определение ветки вендора
 
-Domain/BlackDiamondsGems        классификация камней, сбор из сумок и экипировки
-Domain/BlackDiamondsSockets     RemoveAll / InsertAll / SwapAll
-Domain/BlackDiamondsEquipSet    обёртка EquipmentManager_EquipSet
+Domain/LapidaryGems        классификация камней, сбор из сумок и экипировки
+Domain/LapidarySockets     RemoveAll / InsertAll / SwapAll
+Domain/LapidaryEquipSet    обёртка EquipmentManager_EquipSet
 
-UI/BlackDiamondsBuyButton       кнопка покупки одного камня
-UI/BlackDiamondsVendorFrame     панель у MerchantFrame
+UI/LapidaryBuyButton       кнопка покупки одного камня
+UI/LapidaryVendorFrame     панель у MerchantFrame
 
-Core/BlackDiamondsEventHandler  регистрация и привязка событий
-Core/BlackDiamondsSlash         /bd
-Core/BlackDiamondsBootstrap     старт
+Core/LapidaryEventHandler  регистрация и привязка событий
+Core/LapidarySlash         /bd
+Core/LapidaryBootstrap     старт
 
-BlackDiamonds.lua               точка входа
+Lapidary.lua               точка входа
 ```
 
 ## Инициализация
 
-1. `BlackDiamonds.lua` создаёт фрейм, зовёт `BlackDiamondsLoader:PopulateGlobals()` и `Bootstrap:Start(frame, addonName)`.
+1. `Lapidary.lua` создаёт фрейм, зовёт `LapidaryLoader:PopulateGlobals()` и `Bootstrap:Start(frame, addonName)`.
 2. `Bootstrap:Start` вычисляет `charKey`, регистрирует `ADDON_LOADED` и `PLAYER_LOGIN`.
 3. По `ADDON_LOADED` своего имени плюс `IsLoggedIn()` вызывается `OnPlayerLogin` — ровно один раз, флаг `private.started`.
 4. `OnPlayerLogin` открывает БД, инициализирует `Server`, ставит диспетчер событий, наполняет `Runtime`, зовёт `EventHandler:OnAddonReady` и регистрирует slash.

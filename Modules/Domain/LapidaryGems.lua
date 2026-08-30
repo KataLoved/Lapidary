@@ -1,19 +1,19 @@
----@class BlackDiamondsGems
-local BlackDiamondsGems = BlackDiamondsLoader:CreateModule("BlackDiamondsGems")
+---@class LapidaryGems
+local LapidaryGems = LapidaryLoader:CreateModule("LapidaryGems")
 
----@type BlackDiamondsConstants
-local BlackDiamondsConstants = BlackDiamondsLoader:ImportModule("BlackDiamondsConstants")
+---@type LapidaryConstants
+local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 
-local META_GEMS = BlackDiamondsConstants.META_GEMS
-local BIG_GEMS = BlackDiamondsConstants.BIG_GEMS
-local SMALL_GEMS = BlackDiamondsConstants.SMALL_GEMS
-local LEGENDARY = BlackDiamondsConstants.LEGENDARY_QUALITY
-local INVENTORY_SLOTS = BlackDiamondsConstants.INVENTORY_SLOTS
+local META_GEMS = LapidaryConstants.META_GEMS
+local BIG_GEMS = LapidaryConstants.BIG_GEMS
+local SMALL_GEMS = LapidaryConstants.SMALL_GEMS
+local LEGENDARY = LapidaryConstants.LEGENDARY_QUALITY
+local INVENTORY_SLOTS = LapidaryConstants.INVENTORY_SLOTS
 local MAX_SOCKETS = 3
 
 ---@param itemId number|nil
 ---@return string|nil @"meta", "big" or "small"
-function BlackDiamondsGems:Classify(itemId)
+function LapidaryGems:Classify(itemId)
     if not itemId then
         return nil
     end
@@ -48,7 +48,7 @@ local function hasLegendaryGem(itemLink)
 end
 
 ---@return table[] @Removal entries { bag, slot, index }
-function BlackDiamondsGems:CollectSocketed()
+function LapidaryGems:CollectSocketed()
     local entries = {}
 
     for _, slotName in ipairs(INVENTORY_SLOTS) do
@@ -88,7 +88,7 @@ function BlackDiamondsGems:CollectSocketed()
 end
 
 ---@return table @{ meta = {...}, big = {...}, small = {...} }, entries are { bag, slot }
-function BlackDiamondsGems:CollectLoose()
+function LapidaryGems:CollectLoose()
     local pools = { meta = {}, big = {}, small = {} }
     for bag = 0, NUM_BAG_SLOTS do
         for slot = 1, GetContainerNumSlots(bag) do
@@ -104,9 +104,9 @@ function BlackDiamondsGems:CollectLoose()
 end
 
 ---@return number[] @Equipped slot ids that currently hold an item
-function BlackDiamondsGems:GetOccupiedSlots()
+function LapidaryGems:GetOccupiedSlots()
     local slots = {}
-    for slotId = BlackDiamondsConstants.EQUIPPED_SLOT_MIN, BlackDiamondsConstants.EQUIPPED_SLOT_MAX do
+    for slotId = LapidaryConstants.EQUIPPED_SLOT_MIN, LapidaryConstants.EQUIPPED_SLOT_MAX do
         if GetInventoryItemLink("player", slotId) then
             slots[#slots + 1] = slotId
         end
@@ -115,7 +115,7 @@ function BlackDiamondsGems:GetOccupiedSlots()
 end
 
 ---@return boolean
-function BlackDiamondsGems:HasSocketedLegendary()
+function LapidaryGems:HasSocketedLegendary()
     for _, slotName in ipairs(INVENTORY_SLOTS) do
         local slotId = GetInventorySlotInfo(slotName)
         if hasLegendaryGem(GetInventoryItemLink("player", slotId)) then

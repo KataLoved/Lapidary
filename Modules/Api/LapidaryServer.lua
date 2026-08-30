@@ -1,14 +1,14 @@
----@class BlackDiamondsServer
+---@class LapidaryServer
 ---@field private table
-local BlackDiamondsServer = BlackDiamondsLoader:CreateModule("BlackDiamondsServer")
-local private = BlackDiamondsServer.private
+local LapidaryServer = LapidaryLoader:CreateModule("LapidaryServer")
+local private = LapidaryServer.private
 
----@type BlackDiamondsConstants
-local BlackDiamondsConstants = BlackDiamondsLoader:ImportModule("BlackDiamondsConstants")
----@type BlackDiamondsTimer
-local BlackDiamondsTimer = BlackDiamondsLoader:ImportModule("BlackDiamondsTimer")
+---@type LapidaryConstants
+local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
+---@type LapidaryTimer
+local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 
-local OPCODE = BlackDiamondsConstants.OPCODE_REMOVE_SOCKET
+local OPCODE = LapidaryConstants.OPCODE_REMOVE_SOCKET
 local STEP_TIMEOUT = 3
 
 private.queue = {}
@@ -16,7 +16,7 @@ private.busy = false
 
 local function finish(success)
     private.busy = false
-    BlackDiamondsTimer:Cancel(private.timeout)
+    LapidaryTimer:Cancel(private.timeout)
     private.timeout = nil
     local callback = private.onDone
     private.onDone = nil
@@ -31,8 +31,8 @@ local function sendNext()
         finish(true)
         return
     end
-    BlackDiamondsTimer:Cancel(private.timeout)
-    private.timeout = BlackDiamondsTimer:After(STEP_TIMEOUT, function()
+    LapidaryTimer:Cancel(private.timeout)
+    private.timeout = LapidaryTimer:After(STEP_TIMEOUT, function()
         wipe(private.queue)
         finish(false)
     end)
@@ -46,7 +46,7 @@ local function onEvent(_, _, prefix)
     sendNext()
 end
 
-function BlackDiamondsServer:Initialize()
+function LapidaryServer:Initialize()
     if private.frame then
         return
     end
@@ -56,13 +56,13 @@ function BlackDiamondsServer:Initialize()
 end
 
 ---@return boolean
-function BlackDiamondsServer:IsBusy()
+function LapidaryServer:IsBusy()
     return private.busy
 end
 
 ---@param entries table[] @Each entry is { bag = number, slot = number, index = number }
 ---@param onDone fun(success:boolean)|nil
-function BlackDiamondsServer:RemoveSockets(entries, onDone)
+function LapidaryServer:RemoveSockets(entries, onDone)
     if private.busy then
         if onDone then
             onDone(false)
@@ -82,7 +82,7 @@ function BlackDiamondsServer:RemoveSockets(entries, onDone)
     sendNext()
 end
 
-function BlackDiamondsServer:Abort()
+function LapidaryServer:Abort()
     wipe(private.queue)
     if private.busy then
         finish(false)

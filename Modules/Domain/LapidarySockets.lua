@@ -1,18 +1,18 @@
----@class BlackDiamondsSockets
+---@class LapidarySockets
 ---@field private table
-local BlackDiamondsSockets = BlackDiamondsLoader:CreateModule("BlackDiamondsSockets")
-local private = BlackDiamondsSockets.private
+local LapidarySockets = LapidaryLoader:CreateModule("LapidarySockets")
+local private = LapidarySockets.private
 
----@type BlackDiamondsConstants
-local BlackDiamondsConstants = BlackDiamondsLoader:ImportModule("BlackDiamondsConstants")
----@type BlackDiamondsGems
-local BlackDiamondsGems = BlackDiamondsLoader:ImportModule("BlackDiamondsGems")
----@type BlackDiamondsServer
-local BlackDiamondsServer = BlackDiamondsLoader:ImportModule("BlackDiamondsServer")
----@type BlackDiamondsTimer
-local BlackDiamondsTimer = BlackDiamondsLoader:ImportModule("BlackDiamondsTimer")
+---@type LapidaryConstants
+local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
+---@type LapidaryGems
+local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
+---@type LapidaryServer
+local LapidaryServer = LapidaryLoader:ImportModule("LapidaryServer")
+---@type LapidaryTimer
+local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 
-local STEP = BlackDiamondsConstants.SOCKET_STEP
+local STEP = LapidaryConstants.SOCKET_STEP
 
 local function poolsEmpty(pools)
     return #pools.meta == 0 and #pools.big == 0 and #pools.small == 0
@@ -61,15 +61,15 @@ local function fillSlot(payload)
 end
 
 ---@param onDone fun(success:boolean)|nil
-function BlackDiamondsSockets:RemoveAll(onDone)
-    local entries = BlackDiamondsGems:CollectSocketed()
+function LapidarySockets:RemoveAll(onDone)
+    local entries = LapidaryGems:CollectSocketed()
     private.lastRemovedCount = #entries
-    BlackDiamondsServer:RemoveSockets(entries, onDone)
+    LapidaryServer:RemoveSockets(entries, onDone)
 end
 
 ---@param onDone fun()|nil
-function BlackDiamondsSockets:InsertAll(onDone)
-    local pools = BlackDiamondsGems:CollectLoose()
+function LapidarySockets:InsertAll(onDone)
+    local pools = LapidaryGems:CollectLoose()
     if poolsEmpty(pools) then
         if onDone then
             onDone()
@@ -77,26 +77,26 @@ function BlackDiamondsSockets:InsertAll(onDone)
         return
     end
 
-    local slots = BlackDiamondsGems:GetOccupiedSlots()
+    local slots = LapidaryGems:GetOccupiedSlots()
     private.lastInsertSlots = #slots
 
     for i = 1, #slots do
-        BlackDiamondsTimer:After(STEP * i, fillSlot, { slotId = slots[i], pools = pools })
+        LapidaryTimer:After(STEP * i, fillSlot, { slotId = slots[i], pools = pools })
     end
 
     if onDone then
-        BlackDiamondsTimer:After(STEP * (#slots + 1), onDone)
+        LapidaryTimer:After(STEP * (#slots + 1), onDone)
     end
 end
 
 ---@param onDone fun()|nil
-function BlackDiamondsSockets:SwapAll(onDone)
+function LapidarySockets:SwapAll(onDone)
     self:RemoveAll(function()
         self:InsertAll(onDone)
     end)
 end
 
 ---@return number|nil, number|nil
-function BlackDiamondsSockets:GetLastCounts()
+function LapidarySockets:GetLastCounts()
     return private.lastRemovedCount, private.lastInsertSlots
 end

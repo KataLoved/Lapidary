@@ -1,23 +1,23 @@
----@class BlackDiamondsConstants
-local BlackDiamondsConstants = BlackDiamondsLoader:CreateModule("BlackDiamondsConstants")
+---@class LapidaryConstants
+local LapidaryConstants = LapidaryLoader:CreateModule("LapidaryConstants")
 
-BlackDiamondsConstants.CURRENCY_ID = 280505
-BlackDiamondsConstants.SHARD_ID = 104022
-BlackDiamondsConstants.LEGENDARY_QUALITY = 5
+LapidaryConstants.CURRENCY_ID = 280505
+LapidaryConstants.SHARD_ID = 104022
+LapidaryConstants.LEGENDARY_QUALITY = 5
 
-BlackDiamondsConstants.VENDOR_NPC_IDS = {
+LapidaryConstants.VENDOR_NPC_IDS = {
     [55000] = true,
     [13499] = true,
 }
 
-BlackDiamondsConstants.INVENTORY_SLOTS = {
+LapidaryConstants.INVENTORY_SLOTS = {
     "HeadSlot", "NeckSlot", "ShoulderSlot", "BackSlot", "ChestSlot", "WristSlot",
     "HandsSlot", "WaistSlot", "LegsSlot", "FeetSlot", "Finger0Slot", "Finger1Slot",
     "Trinket0Slot", "Trinket1Slot", "MainHandSlot", "SecondaryHandSlot", "RangedSlot",
 }
 
-BlackDiamondsConstants.EQUIPPED_SLOT_MIN = 1
-BlackDiamondsConstants.EQUIPPED_SLOT_MAX = 19
+LapidaryConstants.EQUIPPED_SLOT_MIN = 1
+LapidaryConstants.EQUIPPED_SLOT_MAX = 19
 
 local function addRange(target, from, to)
     for id = from, to do
@@ -26,20 +26,20 @@ local function addRange(target, from, to)
     return target
 end
 
-BlackDiamondsConstants.META_GEMS = addRange({}, 260050, 260070)
+LapidaryConstants.META_GEMS = addRange({}, 260050, 260070)
 
-BlackDiamondsConstants.BIG_GEMS = addRange(addRange({}, 104000, 104019), 100824, 100884)
+LapidaryConstants.BIG_GEMS = addRange(addRange({}, 104000, 104019), 100824, 100884)
 
-BlackDiamondsConstants.SMALL_GEMS =
+LapidaryConstants.SMALL_GEMS =
     addRange(addRange(addRange({}, 103501, 103520), 100700, 100823), 260030, 260048)
 
----@class BlackDiamondsGemEntry
+---@class LapidaryGemEntry
 ---@field id number
 ---@field upgradeId number|nil
 ---@field key string
 
----@type table<string, BlackDiamondsGemEntry[]>
-BlackDiamondsConstants.GEM_GROUPS = {
+---@type table<string, LapidaryGemEntry[]>
+LapidaryConstants.GEM_GROUPS = {
     primary = {
         { id = 103502, upgradeId = 104001, key = "GEM_STRENGTH" },
         { id = 103501, upgradeId = 104000, key = "GEM_AGILITY" },
@@ -81,21 +81,21 @@ BlackDiamondsConstants.GEM_GROUPS = {
     },
 }
 
-BlackDiamondsConstants.GROUP_ORDER = { "primary", "secondary", "hybrid", "tank" }
+LapidaryConstants.GROUP_ORDER = { "primary", "secondary", "hybrid", "tank" }
 
-BlackDiamondsConstants.GROUP_TITLE_KEYS = {
+LapidaryConstants.GROUP_TITLE_KEYS = {
     primary = "GROUP_PRIMARY",
     secondary = "GROUP_SECONDARY",
     hybrid = "GROUP_HYBRID",
     tank = "GROUP_TANK",
 }
 
-BlackDiamondsConstants.OPCODE_REMOVE_SOCKET = "ACMSG_REMOVE_SOCKET_FROM_ITEM"
+LapidaryConstants.OPCODE_REMOVE_SOCKET = "ACMSG_REMOVE_SOCKET_FROM_ITEM"
 
-BlackDiamondsConstants.SOCKET_STEP = 0.05
-BlackDiamondsConstants.EQUIP_SETTLE_DELAY = 0.5
+LapidaryConstants.SOCKET_STEP = 0.05
+LapidaryConstants.EQUIP_SETTLE_DELAY = 0.5
 
-BlackDiamondsConstants.DEFAULTS = {
+LapidaryConstants.DEFAULTS = {
     enabled = true,
     autoSwapOnEquipSet = true,
     showVendorPanel = true,

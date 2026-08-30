@@ -1,26 +1,26 @@
----@class BlackDiamondsBuyButton
-local BlackDiamondsBuyButton = BlackDiamondsLoader:CreateModule("BlackDiamondsBuyButton")
+---@class LapidaryBuyButton
+local LapidaryBuyButton = LapidaryLoader:CreateModule("LapidaryBuyButton")
 
----@type BlackDiamondsMerchant
-local BlackDiamondsMerchant = BlackDiamondsLoader:ImportModule("BlackDiamondsMerchant")
+---@type LapidaryMerchant
+local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 
-local L = LibStub("AceLocale-3.0"):GetLocale("BlackDiamonds", true)
+local L = LibStub("AceLocale-3.0"):GetLocale("Lapidary", true)
 
 local function resolveAmount()
     if IsShiftKeyDown() then
         return 10
     end
     if IsControlKeyDown() then
-        return math.max(BlackDiamondsMerchant:GetCurrencyCount(), 1)
+        return math.max(LapidaryMerchant:GetCurrencyCount(), 1)
     end
     return 1
 end
 
 local function onClick(button)
-    if not BlackDiamondsMerchant:IsCuttingVendor() then
+    if not LapidaryMerchant:IsCuttingVendor() then
         return
     end
-    BlackDiamondsMerchant:Buy(button.gemId, button.gemUpgradeId, resolveAmount())
+    LapidaryMerchant:Buy(button.gemId, button.gemUpgradeId, resolveAmount())
 end
 
 local function onEnter(button)
@@ -42,20 +42,20 @@ local function onLeave()
 end
 
 ---@param button table
-function BlackDiamondsBuyButton:Refresh(button)
+function LapidaryBuyButton:Refresh(button)
     local owned = GetItemCount(button.gemId) or 0
     button.count:SetText(owned > 0 and owned or "")
-    local available = BlackDiamondsMerchant:FindIndex(button.gemId)
-        or BlackDiamondsMerchant:FindIndex(button.gemUpgradeId)
+    local available = LapidaryMerchant:FindIndex(button.gemId)
+        or LapidaryMerchant:FindIndex(button.gemUpgradeId)
     button.icon:SetDesaturated(available == nil)
     button:SetAlpha(available and 1 or 0.35)
 end
 
 ---@param parent table
----@param entry BlackDiamondsGemEntry
+---@param entry LapidaryGemEntry
 ---@param size number
 ---@return table
-function BlackDiamondsBuyButton:Create(parent, entry, size)
+function LapidaryBuyButton:Create(parent, entry, size)
     local button = CreateFrame("Button", nil, parent)
     button:SetSize(size, size)
     button:RegisterForClicks("LeftButtonUp")

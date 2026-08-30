@@ -1,4 +1,4 @@
-local L = LibStub("AceLocale-3.0"):NewLocale("BlackDiamonds", "enUS", true, true)
+local L = LibStub("AceLocale-3.0"):NewLocale("Lapidary", "enUS", true, true)
 if not L then return end
 
 L["PANEL_TITLE"] = "Black Diamonds"

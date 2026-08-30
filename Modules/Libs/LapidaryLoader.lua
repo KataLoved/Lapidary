@@ -1,13 +1,13 @@
----@class BlackDiamondsLoader
-BlackDiamondsLoader = {}
+---@class LapidaryLoader
+LapidaryLoader = {}
 
 local modules = {}
-BlackDiamondsLoader._modules = modules
+LapidaryLoader._modules = modules
 
 ---@generic T
 ---@param name `T` @Module name
 ---@return T|{ private: table } @Module reference
-function BlackDiamondsLoader:CreateModule(name)
+function LapidaryLoader:CreateModule(name)
     if not modules[name] then
         modules[name] = { private = {} }
     end
@@ -17,14 +17,14 @@ end
 ---@generic T
 ---@param name `T` @Module name
 ---@return T|{ private: table } @Module reference
-function BlackDiamondsLoader:ImportModule(name)
+function LapidaryLoader:ImportModule(name)
     if not modules[name] then
         modules[name] = { private = {} }
     end
     return modules[name]
 end
 
-function BlackDiamondsLoader:PopulateGlobals()
+function LapidaryLoader:PopulateGlobals()
     for name, module in pairs(modules) do
         _G[name] = module
     end

@@ -1,10 +1,10 @@
 <#
 .SYNOPSIS
-    Copies the runtime part of BlackDiamonds into the game AddOns folder.
+    Copies the runtime part of Lapidary into the game AddOns folder.
 
 .DESCRIPTION
-    Only what the client actually loads is copied: BlackDiamonds.toc,
-    BlackDiamonds.lua, embeds.xml, Modules/, Libs/, Localization/.
+    Only what the client actually loads is copied: Lapidary.toc,
+    Lapidary.lua, embeds.xml, Modules/, Libs/, Localization/.
     Everything else (docs/, *.md, .git, .vscode, deploy.ps1) stays out of the
     game folder.
 
@@ -33,13 +33,13 @@ param(
 
 $ErrorActionPreference = 'Stop'
 
-$AddonName = 'BlackDiamonds'
+$AddonName = 'Lapidary'
 $SourceRoot = $PSScriptRoot
 $Target = Join-Path $GamePath $AddonName
 
 $RootFiles = @(
-    'BlackDiamonds.toc',
-    'BlackDiamonds.lua',
+    'Lapidary.toc',
+    'Lapidary.lua',
     'embeds.xml'
 )
 $Folders = @(
@@ -132,10 +132,10 @@ if (Test-Path -LiteralPath $Target) {
     }
 }
 
-$version = (Select-String -LiteralPath (Join-Path $SourceRoot 'BlackDiamonds.toc') -Pattern '^##\s*Version:\s*(.+)$').Matches[0].Groups[1].Value.Trim()
+$version = (Select-String -LiteralPath (Join-Path $SourceRoot 'Lapidary.toc') -Pattern '^##\s*Version:\s*(.+)$').Matches[0].Groups[1].Value.Trim()
 
 Write-Host ''
-Write-Host "BlackDiamonds $version -> $Target"
+Write-Host "Lapidary $version -> $Target"
 Write-Host "  copied:    $copied"
 Write-Host "  unchanged: $skipped"
 Write-Host "  removed:   $removed"

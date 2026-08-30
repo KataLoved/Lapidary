@@ -1,7 +1,7 @@
----@class BlackDiamondsTimer
+---@class LapidaryTimer
 ---@field private table
-local BlackDiamondsTimer = BlackDiamondsLoader:CreateModule("BlackDiamondsTimer")
-local private = BlackDiamondsTimer.private
+local LapidaryTimer = LapidaryLoader:CreateModule("LapidaryTimer")
+local private = LapidaryTimer.private
 
 private.pending = {}
 private.nextId = 1
@@ -46,7 +46,7 @@ end
 ---@param callback fun(payload:any)
 ---@param payload any|nil
 ---@return number @Handle usable with Cancel
-function BlackDiamondsTimer:After(delay, callback, payload)
+function LapidaryTimer:After(delay, callback, payload)
     local id = private.nextId
     private.nextId = id + 1
     private.pending[id] = { remaining = delay, callback = callback, payload = payload }
@@ -55,12 +55,12 @@ function BlackDiamondsTimer:After(delay, callback, payload)
 end
 
 ---@param handle number|nil
-function BlackDiamondsTimer:Cancel(handle)
+function LapidaryTimer:Cancel(handle)
     if handle then
         private.pending[handle] = nil
     end
 end
 
-function BlackDiamondsTimer:CancelAll()
+function LapidaryTimer:CancelAll()
     wipe(private.pending)
 end

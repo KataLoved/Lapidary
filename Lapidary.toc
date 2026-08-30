@@ -1,0 +1,30 @@
+## Interface: 30300
+## Title: |cFF9B59B6Lapi|rdary
+## Notes: Black diamond gem manager for Sirus
+## Author: NastyaLove
+## Version: 1.0.0
+## SavedVariables: LapidaryDB
+## X-Sirus-Category: 15
+
+embeds.xml
+
+Localization\Localization.xml
+
+Modules\Libs\LapidaryLoader.lua
+Modules\Libs\LapidaryTimer.lua
+Modules\Core\LapidaryConstants.lua
+Modules\Core\LapidaryConfig.lua
+Modules\Core\LapidaryDatabase.lua
+Modules\Core\LapidaryRuntime.lua
+Modules\Api\LapidaryServer.lua
+Modules\Api\LapidaryMerchant.lua
+Modules\Domain\LapidaryGems.lua
+Modules\Domain\LapidarySockets.lua
+Modules\Domain\LapidaryEquipSet.lua
+Modules\UI\LapidaryBuyButton.lua
+Modules\UI\LapidaryVendorFrame.lua
+Modules\Core\LapidaryEventHandler.lua
+Modules\Core\LapidarySlash.lua
+Modules\Core\LapidaryBootstrap.lua
+
+Lapidary.lua
