@@ -13,3 +13,6 @@ _publish/
 Thumbs.db
 desktop.ini
 .DS_Store
+
+# Reference dump of the WeakAura this addon replaces
+WeakAuras.lua

@@ -42,6 +42,16 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     ACTION_REMOVE_ALL = "Take out",
     ACTION_INSERT_ALL = "Insert",
 
+    RESTORE_TITLE = "Return to base gem",
+    RESTORE_COST = "This will consume:",
+    RESTORE_BUTTON = "Return",
+    RESTORE_IN_BAGS = "Cut gems in bags:",
+    RESTORE_NOTHING = "No cut gems in bags",
+    RESTORE_NO_GEM = "The vendor shows no gem to trade in",
+
+    TOOLTIP_REMOVE_ALL = "Take every black diamond out of equipped items and items in bags",
+    TOOLTIP_INSERT_ALL = "Fill free sockets from bags: meta into meta sockets, big gems before small ones",
+
     TOOLTIP_BUY_ONE = "Left click - buy one",
     TOOLTIP_BUY_TEN = "Shift + left click - buy ten",
     TOOLTIP_BUY_ALL = "Ctrl + left click - buy as many as you can afford",

@@ -42,6 +42,16 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     ACTION_REMOVE_ALL = "Достать",
     ACTION_INSERT_ALL = "Вставить",
 
+    RESTORE_TITLE = "Вернуть в исходный",
+    RESTORE_COST = "Будет потрачено:",
+    RESTORE_BUTTON = "Вернуть",
+    RESTORE_IN_BAGS = "Огранённые камни в сумках:",
+    RESTORE_NOTHING = "Огранённых камней в сумках нет",
+    RESTORE_NO_GEM = "Торговец не показывает камень к обмену",
+
+    TOOLTIP_REMOVE_ALL = "Вынуть все чёрные бриллианты из надетых вещей и из вещей в сумках",
+    TOOLTIP_INSERT_ALL = "Разложить бриллианты из сумок по свободным гнёздам: мета в мета-гнёзда, крупные вперёд мелких",
+
     TOOLTIP_BUY_ONE = "ЛКМ — купить один",
     TOOLTIP_BUY_TEN = "Shift + ЛКМ — купить десять",
     TOOLTIP_BUY_ALL = "Ctrl + ЛКМ — купить столько, на сколько хватит",
