@@ -43,7 +43,8 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     ACTION_INSERT_ALL = "Insert",
 
     RESTORE_TITLE = "Return to base gem",
-    RESTORE_COST = "This will consume:",
+    RESTORE_COST = "Click a gem to turn it back into a base diamond:",
+    RESTORE_ROW_HINT = "Left click - turn this gem back into a base diamond",
     RESTORE_BUTTON = "Return",
     RESTORE_IN_BAGS = "Cut gems in bags:",
     RESTORE_NOTHING = "No cut gems in bags",

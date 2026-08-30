@@ -30,14 +30,27 @@ function LapidaryMerchant:FindIndex(itemId)
     return nil
 end
 
----@return boolean @True when the interacted NPC is one of the black diamond vendors
-function LapidaryMerchant:IsGemVendor()
+local rememberedGemVendor = false
+
+---Called on MERCHANT_SHOW: the NPC guid is only reliable right then, later
+---updates can fire with no unit available.
+function LapidaryMerchant:RememberVendor()
+    rememberedGemVendor = false
     local guid = UnitGUID("npc") or UnitGUID("target")
     if not guid then
-        return false
+        return
     end
     local npcId = tonumber(guid:sub(9, 12), 16)
-    return npcId ~= nil and LapidaryConstants.VENDOR_NPC_IDS[npcId] == true
+    rememberedGemVendor = npcId ~= nil and LapidaryConstants.VENDOR_NPC_IDS[npcId] == true
+end
+
+function LapidaryMerchant:ForgetVendor()
+    rememberedGemVendor = false
+end
+
+---@return boolean @True when the interacted NPC is one of the black diamond vendors
+function LapidaryMerchant:IsGemVendor()
+    return rememberedGemVendor
 end
 
 ---@return boolean @True when the open merchant is the gem-cutting list
@@ -82,22 +95,30 @@ function LapidaryMerchant:GetAltCost(index)
     return tonumber(frame.itemLink:match("item:(%d+)")), frame.itemLink
 end
 
----@return table|nil @{ gemId, gemLink, gold } describing one restore purchase
-function LapidaryMerchant:GetRestoreCost()
+---@return table[] @One entry per offered trade-in: { index, gemId, gold }
+function LapidaryMerchant:GetRestoreEntries()
+    local entries = {}
     if not self:IsRestoreVendor() then
-        return nil
+        return entries
     end
-    local gemId, gemLink = self:GetAltCost(1)
-    local price = select(3, GetMerchantItemInfo(1))
-    return { gemId = gemId, gemLink = gemLink, gold = price or 0 }
+    for index = 1, GetMerchantNumItems() do
+        local gemId = self:GetAltCost(index)
+        local price = select(3, GetMerchantItemInfo(index))
+        entries[#entries + 1] = { index = index, gemId = gemId, gold = price or 0 }
+    end
+    return entries
 end
 
+---@param index number @Merchant index of the trade-in to buy
 ---@return boolean
-function LapidaryMerchant:BuyRestore()
+function LapidaryMerchant:BuyRestore(index)
     if not self:IsRestoreVendor() then
         return false
     end
-    BuyMerchantItem(1, 1)
+    if not index or index < 1 or index > GetMerchantNumItems() then
+        return false
+    end
+    BuyMerchantItem(index, 1)
     return true
 end
 
@@ -139,8 +160,8 @@ function LapidaryMerchant:GetStatText(itemId)
     local tip = _G.LapidaryScanTooltip
     if not tip then
         tip = CreateFrame("GameTooltip", "LapidaryScanTooltip", UIParent, "GameTooltipTemplate")
-        tip:SetOwner(UIParent, "ANCHOR_NONE")
     end
+    tip:SetOwner(UIParent, "ANCHOR_NONE")
     tip:ClearLines()
     tip:SetMerchantItem(index)
     local parts
@@ -151,7 +172,6 @@ function LapidaryMerchant:GetStatText(itemId)
             parts = parts and (parts .. ", " .. text) or text
         end
     end
-    tip:Hide()
     if parts then
         statCache[itemId] = parts
     end

@@ -17,11 +17,17 @@ local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local PADDING = 12
-local WIDTH = 296
+local COLUMN_WIDTH = 268
+local COLUMN_GAP = 10
+local WIDTH = PADDING * 2 + COLUMN_WIDTH * 2 + COLUMN_GAP
 local ROW_HEIGHT = 20
 local HEADER_HEIGHT = 18
 local GROUP_GAP = 6
 local GAP_FROM_MERCHANT = 12
+local COLUMNS = {
+    { "primary", "secondary" },
+    { "hybrid", "tank" },
+}
 
 local function createHeader(parent, text)
     local label = parent:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
@@ -33,26 +39,35 @@ end
 
 local function buildBody(frame)
     frame.rows = {}
-    local rowWidth = WIDTH - PADDING * 2
-    local y = -PADDING - 36
+    local top = -PADDING - 36
+    local lowest = top
 
-    for _, groupKey in ipairs(LapidaryConstants.GROUP_ORDER) do
-        local entries = LapidaryConstants.GEM_GROUPS[groupKey]
-        local header = createHeader(frame, L[LapidaryConstants.GROUP_TITLE_KEYS[groupKey]])
-        header:SetPoint("TOPLEFT", PADDING, y)
-        y = y - HEADER_HEIGHT
+    for columnIndex = 1, #COLUMNS do
+        local x = PADDING + (columnIndex - 1) * (COLUMN_WIDTH + COLUMN_GAP)
+        local y = top
 
-        for index = 1, #entries do
-            local row = LapidaryBuyButton:Create(frame, entries[index], rowWidth, ROW_HEIGHT)
-            row:SetPoint("TOPLEFT", PADDING, y)
-            frame.rows[#frame.rows + 1] = row
-            y = y - ROW_HEIGHT
+        for _, groupKey in ipairs(COLUMNS[columnIndex]) do
+            local entries = LapidaryConstants.GEM_GROUPS[groupKey]
+            local header = createHeader(frame, L[LapidaryConstants.GROUP_TITLE_KEYS[groupKey]])
+            header:SetPoint("TOPLEFT", x, y)
+            y = y - HEADER_HEIGHT
+
+            for index = 1, #entries do
+                local row = LapidaryBuyButton:Create(frame, entries[index], COLUMN_WIDTH, ROW_HEIGHT)
+                row:SetPoint("TOPLEFT", x, y)
+                frame.rows[#frame.rows + 1] = row
+                y = y - ROW_HEIGHT
+            end
+
+            y = y - GROUP_GAP
         end
 
-        y = y - GROUP_GAP
+        if y < lowest then
+            lowest = y
+        end
     end
 
-    frame:SetSize(WIDTH, math.abs(y) + PADDING)
+    frame:SetSize(WIDTH, math.abs(lowest) + PADDING)
 end
 
 local function createFrame()

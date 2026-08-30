@@ -11,6 +11,8 @@ local LapidaryRestoreFrame = LapidaryLoader:ImportModule("LapidaryRestoreFrame")
 local LapidaryCharacterPanel = LapidaryLoader:ImportModule("LapidaryCharacterPanel")
 ---@type LapidaryEquipSet
 local LapidaryEquipSet = LapidaryLoader:ImportModule("LapidaryEquipSet")
+---@type LapidaryMerchant
+local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 
 function LapidaryEventHandler:RegisterEarlyEvents(frame)
     frame:RegisterEvent("ADDON_LOADED")
@@ -32,12 +34,18 @@ function LapidaryEventHandler:BindHandlers(frame)
     private.bound = true
 
     frame.MERCHANT_SHOW = function()
+        LapidaryMerchant:RememberVendor()
         LapidaryVendorFrame:Update()
         LapidaryRestoreFrame:Update()
     end
-    frame.MERCHANT_UPDATE = frame.MERCHANT_SHOW
+
+    frame.MERCHANT_UPDATE = function()
+        LapidaryVendorFrame:Update()
+        LapidaryRestoreFrame:Update()
+    end
 
     frame.MERCHANT_CLOSED = function()
+        LapidaryMerchant:ForgetVendor()
         LapidaryVendorFrame:Hide()
         LapidaryRestoreFrame:Hide()
     end

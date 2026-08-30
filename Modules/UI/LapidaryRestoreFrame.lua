@@ -7,8 +7,6 @@ local private = LapidaryRestoreFrame.private
 local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 ---@type LapidaryMerchant
 local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
----@type LapidaryGems
-local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
 ---@type LapidarySkin
@@ -16,53 +14,77 @@ local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
 
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
-local PADDING = 10
-local ICON = 24
-local SPACING = 3
-local WIDTH = 200
-local MAX_ROW = 7
+local PADDING = 12
+local WIDTH = 280
+local ROW_HEIGHT = 22
+local ICON = 18
+local HEADER = 54
+local ACTION_HEIGHT = 22
+local GAP_FROM_MERCHANT = 12
 
-local function countCutGemsInBags()
-    local counts, order = {}, {}
-    for bag = 0, NUM_BAG_SLOTS do
-        for slot = 1, GetContainerNumSlots(bag) do
-            local itemId = GetContainerItemID(bag, slot)
-            if itemId and LapidaryGems:Classify(itemId) then
-                if not counts[itemId] then
-                    order[#order + 1] = itemId
-                end
-                local _, stack = GetContainerItemInfo(bag, slot)
-                counts[itemId] = (counts[itemId] or 0) + (stack or 1)
-            end
-        end
-    end
-    return counts, order
+local function onRowClick(row)
+    LapidaryMerchant:BuyRestore(row.merchantIndex)
 end
 
-local function acquireIcon(frame, index)
-    local icons = frame.icons
-    if icons[index] then
-        return icons[index]
+local function onRowEnter(row)
+    row.highlight:Show()
+    if row.gemId then
+        GameTooltip:SetOwner(row, "ANCHOR_RIGHT")
+        GameTooltip:SetHyperlink("item:" .. row.gemId)
+        GameTooltip:AddLine(" ")
+        GameTooltip:AddLine(L.RESTORE_ROW_HINT, 1, 1, 1, true)
+        GameTooltip:Show()
     end
-    local button = CreateFrame("Frame", nil, frame)
-    button:SetSize(ICON, ICON)
-    button.texture = button:CreateTexture(nil, "ARTWORK")
-    button.texture:SetAllPoints()
-    button.texture:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-    button.count = button:CreateFontString(nil, "OVERLAY", "NumberFontNormalSmall")
-    button.count:SetPoint("BOTTOMRIGHT", 0, 1)
-    icons[index] = button
-    return button
+end
+
+local function onRowLeave(row)
+    row.highlight:Hide()
+    GameTooltip:Hide()
+end
+
+local function acquireRow(frame, index)
+    if frame.rows[index] then
+        return frame.rows[index]
+    end
+    local row = CreateFrame("Button", nil, frame)
+    row:SetSize(WIDTH - PADDING * 2, ROW_HEIGHT)
+    row:RegisterForClicks("LeftButtonUp")
+
+    row.highlight = row:CreateTexture(nil, "BACKGROUND")
+    row.highlight:SetAllPoints()
+    row.highlight:SetTexture(1, 1, 1, 0.12)
+    row.highlight:Hide()
+
+    row.icon = row:CreateTexture(nil, "ARTWORK")
+    row.icon:SetSize(ICON, ICON)
+    row.icon:SetPoint("LEFT", 2, 0)
+    row.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
+
+    row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    row.label:SetPoint("LEFT", ICON + 6, 0)
+    row.label:SetPoint("RIGHT", -60, 0)
+    row.label:SetJustifyH("LEFT")
+
+    row.price = row:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
+    row.price:SetPoint("RIGHT", -2, 0)
+    row.price:SetJustifyH("RIGHT")
+
+    row:SetScript("OnClick", onRowClick)
+    row:SetScript("OnEnter", onRowEnter)
+    row:SetScript("OnLeave", onRowLeave)
+
+    frame.rows[index] = row
+    return row
 end
 
 local function createFrame()
     local frame = CreateFrame("Frame", "LapidaryRestorePanel", MerchantFrame)
-    frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", 12, 0)
+    frame:SetPoint("TOPLEFT", MerchantFrame, "TOPRIGHT", GAP_FROM_MERCHANT, 0)
     frame:SetFrameStrata("HIGH")
     frame:SetToplevel(true)
     frame:EnableMouse(true)
     frame:SetWidth(WIDTH)
-    frame.icons = {}
+    frame.rows = {}
 
     LapidarySkin:Frame(frame)
 
@@ -70,34 +92,16 @@ local function createFrame()
     frame.title:SetPoint("TOPLEFT", PADDING, -PADDING)
     frame.title:SetText(L.RESTORE_TITLE)
 
-    frame.costLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    frame.costLabel:SetPoint("TOPLEFT", PADDING, -PADDING - 20)
-    frame.costLabel:SetText(L.RESTORE_COST)
-
-    frame.costIcon = frame:CreateTexture(nil, "ARTWORK")
-    frame.costIcon:SetSize(ICON, ICON)
-    frame.costIcon:SetPoint("TOPLEFT", PADDING, -PADDING - 36)
-    frame.costIcon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
-
-    frame.costText = frame:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
-    frame.costText:SetPoint("LEFT", frame.costIcon, "RIGHT", 4, 0)
-    frame.costText:SetWidth(WIDTH - PADDING * 2 - ICON - 4)
-    frame.costText:SetJustifyH("LEFT")
-
-    frame.button = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.button:SetSize(WIDTH - PADDING * 2, 22)
-    frame.button:SetPoint("TOPLEFT", PADDING, -PADDING - 68)
-    LapidarySkin:Button(frame.button)
-    frame.button:SetText(L.RESTORE_BUTTON)
-    frame.button:SetScript("OnClick", function()
-        LapidaryMerchant:BuyRestore()
-    end)
+    frame.hint = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    frame.hint:SetPoint("TOPLEFT", PADDING, -PADDING - 18)
+    frame.hint:SetPoint("RIGHT", -PADDING, 0)
+    frame.hint:SetJustifyH("LEFT")
+    frame.hint:SetText(L.RESTORE_COST)
 
     local half = (WIDTH - PADDING * 2) / 2 - 2
 
     frame.actionOut = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.actionOut:SetSize(half, 20)
-    frame.actionOut:SetPoint("TOPLEFT", PADDING, -PADDING - 94)
+    frame.actionOut:SetSize(half, ACTION_HEIGHT)
     LapidarySkin:Button(frame.actionOut)
     frame.actionOut:SetText(L.ACTION_REMOVE_ALL)
     frame.actionOut:SetScript("OnClick", function()
@@ -111,7 +115,7 @@ local function createFrame()
     frame.actionOut:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
     frame.actionIn = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
-    frame.actionIn:SetSize(half, 20)
+    frame.actionIn:SetSize(half, ACTION_HEIGHT)
     frame.actionIn:SetPoint("TOPLEFT", frame.actionOut, "TOPRIGHT", 4, 0)
     LapidarySkin:Button(frame.actionIn)
     frame.actionIn:SetText(L.ACTION_INSERT_ALL)
@@ -125,35 +129,7 @@ local function createFrame()
     end)
     frame.actionIn:SetScript("OnLeave", function() GameTooltip:Hide() end)
 
-    frame.bagsLabel = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    frame.bagsLabel:SetPoint("TOPLEFT", PADDING, -PADDING - 124)
-    frame.bagsLabel:SetText(L.RESTORE_IN_BAGS)
-
     return frame
-end
-
-local function layoutBagIcons(frame)
-    local counts, order = countCutGemsInBags()
-    for _, icon in pairs(frame.icons) do
-        icon:Hide()
-    end
-
-    local shown = 0
-    for index = 1, #order do
-        local itemId = order[index]
-        local icon = acquireIcon(frame, index)
-        local column = (index - 1) % MAX_ROW
-        local row = math.floor((index - 1) / MAX_ROW)
-        icon:SetPoint("TOPLEFT", PADDING + column * (ICON + SPACING), -PADDING - 140 - row * (ICON + SPACING))
-        icon.texture:SetTexture(GetItemIcon(itemId))
-        icon.count:SetText(counts[itemId] > 1 and counts[itemId] or "")
-        icon:Show()
-        shown = index
-    end
-
-    local rows = math.max(math.ceil(shown / MAX_ROW), 1)
-    frame.bagsLabel:SetText(shown > 0 and L.RESTORE_IN_BAGS or L.RESTORE_NOTHING)
-    frame:SetHeight(PADDING + 140 + rows * (ICON + SPACING) + PADDING)
 end
 
 function LapidaryRestoreFrame:Refresh()
@@ -162,20 +138,32 @@ function LapidaryRestoreFrame:Refresh()
         return
     end
 
-    local cost = LapidaryMerchant:GetRestoreCost()
-    if cost and cost.gemId then
-        frame.costIcon:SetTexture(GetItemIcon(cost.gemId))
-        frame.costIcon:Show()
-        frame.costText:SetText(string.format("%s\n%s",
-            GetItemInfo(cost.gemId) or "", GetCoinTextureString(cost.gold or 0)))
-        frame.button:Enable()
-    else
-        frame.costIcon:Hide()
-        frame.costText:SetText(L.RESTORE_NO_GEM)
-        frame.button:Disable()
+    local entries = LapidaryMerchant:GetRestoreEntries()
+    for _, row in pairs(frame.rows) do
+        row:Hide()
     end
 
-    layoutBagIcons(frame)
+    local y = -PADDING - HEADER
+    for index = 1, #entries do
+        local entry = entries[index]
+        local row = acquireRow(frame, index)
+        row:SetPoint("TOPLEFT", PADDING, y)
+        row.merchantIndex = entry.index
+        row.gemId = entry.gemId
+        row.icon:SetTexture(entry.gemId and GetItemIcon(entry.gemId) or nil)
+        row.label:SetText(entry.gemId and (GetItemInfo(entry.gemId) or ("item:" .. entry.gemId)) or "?")
+        row.price:SetText(GetCoinTextureString(entry.gold or 0))
+        row:Show()
+        y = y - ROW_HEIGHT
+    end
+
+    frame.hint:SetText(#entries > 0 and L.RESTORE_COST or L.RESTORE_NOTHING)
+
+    y = y - 8
+    frame.actionOut:SetPoint("TOPLEFT", PADDING, y)
+    y = y - ACTION_HEIGHT
+
+    frame:SetHeight(math.abs(y) + PADDING)
 end
 
 function LapidaryRestoreFrame:Update()

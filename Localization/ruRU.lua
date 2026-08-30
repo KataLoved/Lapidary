@@ -43,7 +43,8 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("ruRU", {
     ACTION_INSERT_ALL = "Вставить",
 
     RESTORE_TITLE = "Вернуть в исходный",
-    RESTORE_COST = "Будет потрачено:",
+    RESTORE_COST = "Нажми на камень, чтобы вернуть его в исходный:",
+    RESTORE_ROW_HINT = "ЛКМ — вернуть этот камень в исходный",
     RESTORE_BUTTON = "Вернуть",
     RESTORE_IN_BAGS = "Огранённые камни в сумках:",
     RESTORE_NOTHING = "Огранённых камней в сумках нет",

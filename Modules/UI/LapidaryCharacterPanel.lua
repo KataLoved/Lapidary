@@ -63,32 +63,32 @@ end
 local function createFrame()
     local anchor = _G.CharacterFrame or PaperDollFrame
     local frame = CreateFrame("Frame", "LapidaryCharacterPanel", PaperDollFrame)
-    frame:SetSize(BUTTON_WIDTH * 2 + BLOCK_GAP, BUTTON_HEIGHT)
-    frame:SetPoint("TOPLEFT", anchor, "BOTTOMLEFT", 4, -4)
+    frame:SetSize(BUTTON_WIDTH, BUTTON_HEIGHT * 4 + BLOCK_GAP + 4)
+    frame:SetPoint("TOPRIGHT", anchor, "TOPLEFT", -6, -18)
 
     frame.outEquipped = makeButton(frame, L.ACTION_REMOVE_ALL, L.TOOLTIP_REMOVE_EQUIPPED, function()
         setBusy(true)
         LapidarySockets:RemoveAll(function() setBusy(false) end, false)
     end)
-    frame.outEquipped:SetPoint("LEFT", 0, 0)
+    frame.outEquipped:SetPoint("TOPLEFT", 0, 0)
 
     frame.inEquipped = makeButton(frame, L.ACTION_INSERT_ALL, L.TOOLTIP_INSERT_EQUIPPED, function()
         setBusy(true)
         LapidarySockets:InsertAll(function() setBusy(false) end, false)
     end)
-    frame.inEquipped:SetPoint("LEFT", frame.outEquipped, "RIGHT", 2, 0)
+    frame.inEquipped:SetPoint("TOPLEFT", frame.outEquipped, "BOTTOMLEFT", 0, -2)
 
     frame.outEverything = makeButton(frame, L.ACTION_REMOVE_EVERYTHING, L.TOOLTIP_REMOVE_EVERYTHING, function()
         setBusy(true)
         LapidarySockets:RemoveAll(function() setBusy(false) end, true)
     end)
-    frame.outEverything:SetPoint("LEFT", frame.inEquipped, "RIGHT", BLOCK_GAP, 0)
+    frame.outEverything:SetPoint("TOPLEFT", frame.inEquipped, "BOTTOMLEFT", 0, -BLOCK_GAP)
 
     frame.inEverything = makeButton(frame, L.ACTION_INSERT_EVERYTHING, L.TOOLTIP_INSERT_EVERYTHING, function()
         setBusy(true)
         LapidarySockets:InsertAll(function() setBusy(false) end, true)
     end)
-    frame.inEverything:SetPoint("LEFT", frame.outEverything, "RIGHT", 2, 0)
+    frame.inEverything:SetPoint("TOPLEFT", frame.outEverything, "BOTTOMLEFT", 0, -2)
 
     frame.buttons = {
         frame.outEquipped, frame.inEquipped,
