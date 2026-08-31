@@ -2,8 +2,10 @@
 ## Title: |cFFFF8000Lapi|rdary
 ## Notes: Менеджер чёрных бриллиантов для Sirus: покупка, огранка, перенос камней
 ## Author: NastyaLove
-## Version: 1.1.0
+## Version: 1.2.0
 ## SavedVariables: LapidaryDB
+## X-Sirus-Update: https://github.com/KataLoved/Lapidary/tree/master
+## X-Sirus-Category: 9
 
 Modules\Libs\LapidaryLoader.lua
 Modules\Libs\LapidaryLocale.lua
