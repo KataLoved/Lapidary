@@ -60,6 +60,18 @@ local function onLeave(row)
     GameTooltip:Hide()
 end
 
+---Points an existing row at another gem, so the list can be reordered without
+---creating new frames.
+---@param row table
+---@param entry LapidaryGemEntry
+function LapidaryBuyButton:Bind(row, entry)
+    row.gemId = entry.id
+    row.gemUpgradeId = entry.upgradeId
+    row.offeredId = LapidaryMerchant:GetDisplayItemId(entry.id, entry.upgradeId)
+    row.labelKey = entry.key
+    row.icon:SetTexture(GetItemIcon(row.offeredId))
+end
+
 ---@param row table
 function LapidaryBuyButton:Refresh(row)
     local offeredId = LapidaryMerchant:GetDisplayItemId(row.gemId, row.gemUpgradeId)
@@ -86,19 +98,13 @@ function LapidaryBuyButton:Refresh(row)
 end
 
 ---@param parent table
----@param entry LapidaryGemEntry
 ---@param width number
 ---@param height number
 ---@return table
-function LapidaryBuyButton:Create(parent, entry, width, height)
+function LapidaryBuyButton:Create(parent, width, height)
     local row = CreateFrame("Button", nil, parent)
     row:SetSize(width, height)
     row:RegisterForClicks("LeftButtonUp", "RightButtonUp")
-
-    row.gemId = entry.id
-    row.gemUpgradeId = entry.upgradeId
-    row.offeredId = LapidaryMerchant:GetDisplayItemId(entry.id, entry.upgradeId)
-    row.labelKey = entry.key
 
     row.highlight = row:CreateTexture(nil, "BACKGROUND")
     row.highlight:SetAllPoints()
@@ -108,7 +114,6 @@ function LapidaryBuyButton:Create(parent, entry, width, height)
     row.icon = row:CreateTexture(nil, "ARTWORK")
     row.icon:SetSize(ICON, ICON)
     row.icon:SetPoint("LEFT", 2, 0)
-    row.icon:SetTexture(GetItemIcon(row.offeredId))
     row.icon:SetTexCoord(0.07, 0.93, 0.07, 0.93)
 
     row.label = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
