@@ -18,6 +18,24 @@ local function poolsEmpty(pools)
     return #pools.meta == 0 and #pools.big == 0 and #pools.small == 0
 end
 
+local function collectPools()
+    local pools = { meta = {}, big = {}, small = {} }
+    for bag = 0, NUM_BAG_SLOTS do
+        for slot = 1, GetContainerNumSlots(bag) do
+            local itemId = GetContainerItemID(bag, slot)
+            local kind = LapidaryGems:Classify(itemId)
+            if kind then
+                local stackCount = select(2, GetContainerItemInfo(bag, slot)) or 1
+                local pool = pools[kind]
+                for _ = 1, stackCount do
+                    pool[#pool + 1] = { bag = bag, slot = slot, itemId = itemId }
+                end
+            end
+        end
+    end
+    return pools
+end
+
 local function takeFrom(pool)
     return table.remove(pool, 1)
 end
@@ -54,9 +72,12 @@ local function fillTarget(payload)
                 entry = takeFrom(pools.big) or takeFrom(pools.small)
             end
             if entry then
-                PickupContainerItem(entry.bag, entry.slot)
-                ClickSocketButton(socketIndex)
-                placed = true
+                local bag, slot = entry.bag, entry.slot
+                if bag and slot and GetContainerItemID(bag, slot) == entry.itemId then
+                    PickupContainerItem(bag, slot)
+                    ClickSocketButton(socketIndex)
+                    placed = true
+                end
             end
         end
     end
@@ -78,7 +99,7 @@ end
 ---@param onDone fun()|nil
 ---@param includeBags boolean|nil
 function LapidarySockets:InsertAll(onDone, includeBags)
-    local pools = LapidaryGems:CollectLoose()
+    local pools = collectPools()
     if poolsEmpty(pools) then
         if onDone then
             onDone()

@@ -21,10 +21,12 @@ Modules\Api\LapidaryMerchant.lua
 Modules\Domain\LapidaryGems.lua
 Modules\Domain\LapidarySockets.lua
 Modules\Domain\LapidaryEquipSet.lua
-Modules\Domain\LapidaryFavourites.lua
+Modules\Domain\LapidaryFavorites.lua
+Modules\Domain\LapidaryKits.lua
 Modules\UI\LapidaryBuyButton.lua
 Modules\UI\LapidaryVendorFrame.lua
 Modules\UI\LapidaryRestoreFrame.lua
+Modules\UI\LapidaryKitFrame.lua
 Modules\UI\LapidaryCharacterPanel.lua
 Modules\Core\LapidaryEventHandler.lua
 Modules\Core\LapidarySlash.lua

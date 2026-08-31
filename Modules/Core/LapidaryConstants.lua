@@ -2,6 +2,7 @@
 local LapidaryConstants = LapidaryLoader:CreateModule("LapidaryConstants")
 
 LapidaryConstants.CURRENCY_ID = 280505
+LapidaryConstants.CHARGED_DIAMOND_ID = 104021
 LapidaryConstants.SHARD_ID = 104022
 LapidaryConstants.LEGENDARY_QUALITY = 5
 
@@ -80,10 +81,10 @@ LapidaryConstants.GEM_GROUPS = {
         { id = 100723, upgradeId = 100847, key = "GEM_AGILITY_CRIT" },
         { id = 100732, upgradeId = 100856, key = "GEM_ATTACK_POWER_HIT" },
         { id = 100739, upgradeId = 100863, key = "GEM_ATTACK_POWER_CRIT" },
-        { id = 100721, upgradeId = nil, key = "GEM_ATTACK_POWER_HASTE" },
-        { id = 100736, upgradeId = nil, key = "GEM_SPELL_POWER_HIT" },
-        { id = 100724, upgradeId = nil, key = "GEM_SPELL_POWER_CRIT" },
-        { id = 100727, upgradeId = nil, key = "GEM_SPELL_POWER_HASTE" },
+        { id = 100721, upgradeId = 100845, key = "GEM_ATTACK_POWER_HASTE" },
+        { id = 100736, upgradeId = 100860, key = "GEM_SPELL_POWER_HIT" },
+        { id = 100724, upgradeId = 100848, key = "GEM_SPELL_POWER_CRIT" },
+        { id = 100727, upgradeId = 100851, key = "GEM_SPELL_POWER_HASTE" },
         { id = 100720, upgradeId = 100844, key = "GEM_EXPERTISE_HIT" },
     },
 }
@@ -106,8 +107,10 @@ LapidaryConstants.DEFAULTS = {
     enabled = true,
     autoSwapOnEquipSet = true,
     showVendorPanel = true,
-    favourites = {},
     buttonSize = 26,
     buttonsPerRow = 6,
     framePos = { anchor = "TOPLEFT", x = 0, y = 0 },
+    favorites = {},
+    kits = {},
+    activeKit = nil,
 }

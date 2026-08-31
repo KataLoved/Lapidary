@@ -5,8 +5,8 @@ local LapidaryMerchant = LapidaryLoader:CreateModule("LapidaryMerchant")
 local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 ---@type LapidaryGems
 local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
-
 local CURRENCY_ID = LapidaryConstants.CURRENCY_ID
+local CHARGED_DIAMOND_ID = LapidaryConstants.CHARGED_DIAMOND_ID
 
 ---@param index number
 ---@return number|nil
@@ -30,6 +30,29 @@ function LapidaryMerchant:FindIndex(itemId)
         end
     end
     return nil
+end
+
+---@return string|nil @"charged", "normal", or nil while the merchant is loading
+function LapidaryMerchant:GetVariantMode()
+    local costId = self:GetAltCost(1)
+    if costId == CHARGED_DIAMOND_ID then
+        return "charged"
+    end
+    if costId == CURRENCY_ID then
+        return "normal"
+    end
+    return nil
+end
+
+---@param itemId number
+---@param upgradeId number|nil
+---@return number|nil @The variant that should be displayed for this vendor
+function LapidaryMerchant:GetDisplayItemId(itemId, upgradeId)
+    local mode = self:GetVariantMode()
+    if mode == "charged" then
+        return upgradeId
+    end
+    return itemId
 end
 
 local rememberedGemVendor = false
@@ -146,7 +169,7 @@ function LapidaryMerchant:BuyRestore(index)
     return true
 end
 
----@param itemId number|nil
+---@param itemId number
 ---@param upgradeId number|nil
 ---@param amount number
 ---@return boolean, number|nil @Success and the merchant index that was used
@@ -164,6 +187,11 @@ end
 ---@return number
 function LapidaryMerchant:GetCurrencyCount()
     return GetItemCount(CURRENCY_ID) or 0
+end
+
+---@return number
+function LapidaryMerchant:GetChargedDiamondCount()
+    return GetItemCount(CHARGED_DIAMOND_ID) or 0
 end
 
 local statCache = {}
