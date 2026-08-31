@@ -11,6 +11,10 @@ local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 local LapidaryBuyButton = LapidaryLoader:ImportModule("LapidaryBuyButton")
 ---@type LapidaryDatabase
 local LapidaryDatabase = LapidaryLoader:ImportModule("LapidaryDatabase")
+---@type LapidaryFavorites
+local LapidaryFavorites = LapidaryLoader:ImportModule("LapidaryFavorites")
+---@type LapidaryKitFrame
+local LapidaryKitFrame = LapidaryLoader:ImportModule("LapidaryKitFrame")
 ---@type LapidarySkin
 local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
 
@@ -37,9 +41,53 @@ local function createHeader(parent, text)
     return label
 end
 
+local FAVORITE_GAP = 10
+
+---@param frame table
+---@param top number @Where the section begins (negative Y from panel top)
+---@return number @Where the following groups should start
+local function buildFavoritesSection(frame, top)
+    local favorites = LapidaryFavorites:Get()
+    local placed = 0
+    for _, gemId in ipairs(favorites) do
+        if LapidaryFavorites:FindEntry(gemId) then
+            placed = placed + 1
+        end
+    end
+    if placed == 0 then
+        return top
+    end
+
+    local header = createHeader(frame, L.GROUP_FAVORITES)
+    header:SetPoint("TOPLEFT", PADDING, top)
+    top = top - HEADER_HEIGHT - FAVORITE_GAP
+
+    local x = PADDING
+    local rowCount = 0
+    for _, gemId in ipairs(favorites) do
+        local entry = LapidaryFavorites:FindEntry(gemId)
+        if entry then
+            local row = LapidaryBuyButton:Create(frame, entry, COLUMN_WIDTH, ROW_HEIGHT)
+            row:SetPoint("TOPLEFT", x, top)
+            frame.rows[#frame.rows + 1] = row
+            rowCount = rowCount + 1
+            if rowCount % 2 == 0 then
+                x = PADDING
+                top = top - ROW_HEIGHT
+            else
+                x = PADDING + COLUMN_WIDTH + COLUMN_GAP
+            end
+        end
+    end
+    if rowCount % 2 == 1 then
+        top = top - ROW_HEIGHT
+    end
+    return top - FAVORITE_GAP
+end
+
 local function buildBody(frame)
     frame.rows = {}
-    local top = -PADDING - 36
+    local top = buildFavoritesSection(frame, -PADDING - 36)
     local lowest = top
 
     for columnIndex = 1, #COLUMNS do
@@ -53,10 +101,13 @@ local function buildBody(frame)
             y = y - HEADER_HEIGHT
 
             for index = 1, #entries do
-                local row = LapidaryBuyButton:Create(frame, entries[index], COLUMN_WIDTH, ROW_HEIGHT)
-                row:SetPoint("TOPLEFT", x, y)
-                frame.rows[#frame.rows + 1] = row
-                y = y - ROW_HEIGHT
+                local entry = entries[index]
+                if not LapidaryFavorites:IsFavorite(entry.id) then
+                    local row = LapidaryBuyButton:Create(frame, entry, COLUMN_WIDTH, ROW_HEIGHT)
+                    row:SetPoint("TOPLEFT", x, y)
+                    frame.rows[#frame.rows + 1] = row
+                    y = y - ROW_HEIGHT
+                end
             end
 
             y = y - GROUP_GAP
@@ -87,6 +138,24 @@ local function createFrame()
     frame.currency:SetPoint("TOPLEFT", PADDING, -PADDING - 18)
     frame.currency:SetJustifyH("LEFT")
 
+    frame.kitButton = CreateFrame("Button", nil, frame, "UIPanelButtonTemplate")
+    frame.kitButton:SetSize(100, 20)
+    frame.kitButton:SetPoint("TOPRIGHT", -PADDING, -PADDING)
+    frame.kitButton:SetText(L.KIT_BUTTON)
+    LapidarySkin:Button(frame.kitButton)
+    frame.kitButton:SetScript("OnClick", function(button)
+        LapidaryKitFrame:Toggle()
+        button:SetText(LapidaryKitFrame:IsShown() and L.KIT_BUTTON_HIDE or L.KIT_BUTTON)
+    end)
+    frame.kitButton:SetScript("OnEnter", function(button)
+        GameTooltip:SetOwner(button, "ANCHOR_RIGHT")
+        GameTooltip:SetText(L.KIT_TOGGLE_HINT)
+        GameTooltip:Show()
+    end)
+    frame.kitButton:SetScript("OnLeave", function()
+        GameTooltip:Hide()
+    end)
+
     buildBody(frame)
     return frame
 end
@@ -99,8 +168,10 @@ function LapidaryVendorFrame:Refresh()
     frame.currency:SetFormattedText(
         L.PANEL_CURRENCY,
         LapidaryMerchant:GetCurrencyCount(),
+        LapidaryMerchant:GetChargedDiamondCount(),
         GetItemCount(LapidaryConstants.SHARD_ID) or 0
     )
+    frame.kitButton:SetText(LapidaryKitFrame:IsShown() and L.KIT_BUTTON_HIDE or L.KIT_BUTTON)
     for i = 1, #frame.rows do
         LapidaryBuyButton:Refresh(frame.rows[i])
     end
@@ -122,10 +193,23 @@ function LapidaryVendorFrame:Update()
     self:Refresh()
 end
 
+function LapidaryVendorFrame:Rebuild()
+    if private.frame then
+        private.frame:Hide()
+        private.frame = nil
+    end
+    self:Update()
+end
+
 function LapidaryVendorFrame:Hide()
     if private.frame then
         private.frame:Hide()
     end
+end
+
+---@return table|nil @The vendor panel frame handle
+function LapidaryVendorFrame:GetFrame()
+    return private.frame
 end
 
 ---@return boolean

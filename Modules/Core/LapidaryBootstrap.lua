@@ -13,6 +13,8 @@ local LapidaryServer = LapidaryLoader:ImportModule("LapidaryServer")
 local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
 ---@type LapidaryEquipSet
 local LapidaryEquipSet = LapidaryLoader:ImportModule("LapidaryEquipSet")
+---@type LapidaryKits
+local LapidaryKits = LapidaryLoader:ImportModule("LapidaryKits")
 ---@type LapidaryEventHandler
 local LapidaryEventHandler = LapidaryLoader:ImportModule("LapidaryEventHandler")
 ---@type LapidaryCharacterPanel
@@ -58,6 +60,7 @@ function LapidaryBootstrap:OnPlayerLogin()
 
     private.charKey = (UnitName("player") or "?") .. " - " .. (GetRealmName() or "?")
     LapidaryDatabase:Open(private.charKey)
+    LapidaryKits:EnsureDefault(L.KIT_DEFAULT_NAME)
     LapidaryServer:Initialize()
 
     frame:SetScript("OnEvent", function(self, event, ...)

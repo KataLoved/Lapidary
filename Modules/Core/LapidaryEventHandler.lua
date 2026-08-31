@@ -5,6 +5,8 @@ local private = LapidaryEventHandler.private
 
 ---@type LapidaryVendorFrame
 local LapidaryVendorFrame = LapidaryLoader:ImportModule("LapidaryVendorFrame")
+---@type LapidaryKitFrame
+local LapidaryKitFrame = LapidaryLoader:ImportModule("LapidaryKitFrame")
 ---@type LapidaryRestoreFrame
 local LapidaryRestoreFrame = LapidaryLoader:ImportModule("LapidaryRestoreFrame")
 ---@type LapidaryCharacterPanel
@@ -48,11 +50,13 @@ function LapidaryEventHandler:BindHandlers(frame)
         LapidaryMerchant:ForgetVendor()
         LapidaryVendorFrame:Hide()
         LapidaryRestoreFrame:Hide()
+        LapidaryKitFrame:Hide()
     end
 
     frame.BAG_UPDATE = function()
         LapidaryVendorFrame:Refresh()
         LapidaryRestoreFrame:Refresh()
+        LapidaryKitFrame:Refresh()
         LapidaryCharacterPanel:Refresh()
     end
     frame.SOCKET_INFO_UPDATE = frame.BAG_UPDATE
@@ -74,6 +78,7 @@ function LapidaryEventHandler:Disable()
     end
     LapidaryVendorFrame:Hide()
     LapidaryRestoreFrame:Hide()
+    LapidaryKitFrame:Hide()
     LapidaryCharacterPanel:Update()
 end
 
