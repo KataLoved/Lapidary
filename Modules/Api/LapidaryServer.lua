@@ -10,6 +10,7 @@ local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 
 local OPCODE = LapidaryConstants.OPCODE_REMOVE_SOCKET
 local STEP_TIMEOUT = 3
+local STEP_DELAY = LapidaryConstants.REMOVE_STEP
 
 private.queue = {}
 private.busy = false
@@ -39,11 +40,17 @@ local function sendNext()
     SendServerMessage(OPCODE, string.format("%d:%d:%d", entry.bag, entry.slot, entry.index))
 end
 
+---The server answers faster than it wants to be asked again: firing the next
+---opcode straight from the reply is what gets the client kicked for flooding.
 local function onEvent(_, _, prefix)
     if prefix ~= OPCODE or not private.busy then
         return
     end
-    sendNext()
+    LapidaryTimer:After(STEP_DELAY, function()
+        if private.busy then
+            sendNext()
+        end
+    end)
 end
 
 function LapidaryServer:Initialize()
