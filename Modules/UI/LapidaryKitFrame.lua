@@ -15,13 +15,11 @@ local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 local LapidaryFavorites = LapidaryLoader:ImportModule("LapidaryFavorites")
 ---@type LapidarySkin
 local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
----@type LapidaryTimer
-local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local PADDING = 12
-local COLUMN_WIDTH = 220
+local COLUMN_WIDTH = 253
 local COLUMN_GAP = 10
 local WIDTH = PADDING * 2 + COLUMN_WIDTH * 2 + COLUMN_GAP
 local ROW_HEIGHT = 24
@@ -257,6 +255,10 @@ local function createFrame()
     frame.pickerMenu:SetPoint("TOPLEFT", frame.picker, "TOPLEFT")
     frame.pickerMenu:SetAlpha(0)
     frame.pickerMenu:EnableMouse(false)
+    for _, child in ipairs({ frame.pickerMenu:GetChildren() }) do
+        child:EnableMouse(false)
+        child:Hide()
+    end
     frame.picker:SetScript("OnClick", function(self)
         if self.menuOpen then
             self.menuOpen = false
@@ -363,12 +365,15 @@ local function createFrame()
     LapidarySkin:Button(frame.buyAll)
     frame.buyAll:SetScript("OnClick", function()
         local kit = LapidaryKits:GetActive()
-        if kit and LapidaryMerchant:IsCuttingVendor() then
-            frame.buyAll:Disable()
-            LapidaryKits:Buy(kit)
-            LapidaryTimer:After(0.1, function()
-                LapidaryKitFrame:Refresh()
-            end)
+        if not (kit and LapidaryMerchant:IsCuttingVendor()) then
+            return
+        end
+        frame.buyAll:Disable()
+        local started = LapidaryKits:Buy(kit, function()
+            LapidaryKitFrame:Refresh()
+        end)
+        if not started then
+            LapidaryKitFrame:Refresh()
         end
     end)
 

@@ -2,6 +2,16 @@ LapidaryLoader:ImportModule("LapidaryLocale"):Register("enUS", {
     PANEL_TITLE = "Lapidary",
     PANEL_CURRENCY = "Diamonds: |cFFFFFFFF%d|r    Charged diamonds: |cFFFFFFFF%d|r    Shards: |cFFFFFFFF%d|r",
 
+    STAT_PATTERNS = {
+        { "Critical Strike Rating", "Crit" },
+        { "Spell Penetration",      "Spell Pen" },
+        { "Armor Penetration",      "Armor Pen" },
+        { "Attack Power",           "AP" },
+        { "Spell Power",            "SP" },
+        { " Rating",                "" },
+        { " and %+",                " +" },
+    },
+
     GROUP_PRIMARY = "Primary stats",
     GROUP_SECONDARY = "Secondary stats",
     GROUP_HYBRID = "Two-stat",

@@ -15,7 +15,7 @@ local proxy = setmetatable({}, {
 })
 
 ---@param locale string
----@param strings table<string, string>
+---@param strings table<string, string|table>
 ---@param isDefault boolean|nil
 function LapidaryLocale:Register(locale, strings, isDefault)
     if isDefault then
@@ -26,7 +26,7 @@ function LapidaryLocale:Register(locale, strings, isDefault)
     end
 end
 
----@return table<string, string>
+---@return table<string, string|table>
 function LapidaryLocale:Get()
     return proxy
 end

@@ -6,6 +6,8 @@ local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 ---@type LapidaryGems
 local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
 
+local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
+
 local CURRENCY_ID = LapidaryConstants.CURRENCY_ID
 local CHARGED_DIAMOND_ID = LapidaryConstants.CHARGED_DIAMOND_ID
 
@@ -207,6 +209,21 @@ local function scanTooltip()
     return tip
 end
 
+---The tooltip spells every stat out in full ("+45 к рейтингу меткости") and the
+---row is far too narrow for that, so each locale ships its own shortenings.
+---@param text string
+---@return string
+local function shorten(text)
+    local patterns = L.STAT_PATTERNS
+    if type(patterns) ~= "table" then
+        return text
+    end
+    for index = 1, #patterns do
+        text = text:gsub(patterns[index][1], patterns[index][2])
+    end
+    return text
+end
+
 local function collectPlusLines(tip)
     local parts
     for line = 2, tip:NumLines() do
@@ -216,7 +233,7 @@ local function collectPlusLines(tip)
             parts = parts and (parts .. ", " .. text) or text
         end
     end
-    return parts
+    return parts and shorten(parts) or nil
 end
 
 ---Reads the stat line straight off the item, so it works away from the vendor.

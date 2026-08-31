@@ -21,7 +21,7 @@ local LapidarySkin = LapidaryLoader:ImportModule("LapidarySkin")
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local PADDING = 12
-local COLUMN_WIDTH = 268
+local COLUMN_WIDTH = 221
 local COLUMN_GAP = 10
 local WIDTH = PADDING * 2 + COLUMN_WIDTH * 2 + COLUMN_GAP
 local ROW_HEIGHT = 20
