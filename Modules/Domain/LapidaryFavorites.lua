@@ -53,7 +53,7 @@ function LapidaryFavorites:Toggle(gemId)
     local favorites = config.favorites
     for index, id in ipairs(favorites) do
         if id == gemId then
-            tremove(favorites, index)
+            table.remove(favorites, index)
             return false
         end
     end

@@ -7,9 +7,11 @@ local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 local LapidaryFavorites = LapidaryLoader:ImportModule("LapidaryFavorites")
 ---@type LapidaryVendorFrame
 local LapidaryVendorFrame = LapidaryLoader:ImportModule("LapidaryVendorFrame")
+
 local L = LapidaryLoader:ImportModule("LapidaryLocale"):Get()
 
 local ICON = 18
+local STAR = 18
 local TEXT_LEFT = ICON + 6
 local COUNT_WIDTH = 26
 local FAVORITE_STAR = "Interface\\COMMON\\FavoritesIcon"
@@ -124,7 +126,7 @@ function LapidaryBuyButton:Create(parent, entry, width, height)
     row.count:SetJustifyH("RIGHT")
 
     row.star = row:CreateTexture(nil, "OVERLAY")
-    row.star:SetSize(18, 18)
+    row.star:SetSize(STAR, STAR)
     row.star:SetPoint("TOPLEFT", row.icon, "TOPRIGHT", -5, 5)
     row.star:SetTexture(FAVORITE_STAR)
     row.star:Hide()

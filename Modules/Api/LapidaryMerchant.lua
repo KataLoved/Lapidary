@@ -5,6 +5,7 @@ local LapidaryMerchant = LapidaryLoader:CreateModule("LapidaryMerchant")
 local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 ---@type LapidaryGems
 local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
+
 local CURRENCY_ID = LapidaryConstants.CURRENCY_ID
 local CHARGED_DIAMOND_ID = LapidaryConstants.CHARGED_DIAMOND_ID
 

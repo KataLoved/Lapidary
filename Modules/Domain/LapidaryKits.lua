@@ -47,16 +47,15 @@ end
 ---@return table @New empty kit, now active
 function LapidaryKits:Create(defaultName)
     local kits = self:Get()
-    local baseName = defaultName or "Комплект"
     local suffix = 1
-    local name = baseName .. " " .. suffix
+    local name = defaultName .. " " .. suffix
     local used = {}
     for _, existing in ipairs(kits) do
         used[existing.name] = true
     end
     while used[name] do
         suffix = suffix + 1
-        name = baseName .. " " .. suffix
+        name = defaultName .. " " .. suffix
     end
     local kit = { name = name, items = {} }
     kits[#kits + 1] = kit
@@ -84,7 +83,7 @@ function LapidaryKits:Delete(index)
     if #kits <= 1 then
         return false
     end
-    tremove(kits, index)
+    table.remove(kits, index)
     self:SetActive(math.min(math.max(index or 1, 1), #kits))
     return true
 end
@@ -143,7 +142,7 @@ function LapidaryKits:RemoveGem(kit, entry, amount)
         if item.id == requiredId then
             item.count = item.count - amount
             if item.count <= 0 then
-                tremove(kit.items, index)
+                table.remove(kit.items, index)
             end
             return
         end

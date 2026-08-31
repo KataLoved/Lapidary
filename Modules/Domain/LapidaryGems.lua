@@ -130,23 +130,6 @@ function LapidaryGems:CountSocketed(itemId)
     return count
 end
 
----@param itemId number|nil
----@return number @The quantity of one item currently in the player's bags
-function LapidaryGems:CountLoose(itemId)
-    if not itemId then
-        return 0
-    end
-    local count = 0
-    for bag = 0, NUM_BAG_SLOTS do
-        for slot = 1, GetContainerNumSlots(bag) do
-            if GetContainerItemID(bag, slot) == itemId then
-                count = count + (select(2, GetContainerItemInfo(bag, slot)) or 1)
-            end
-        end
-    end
-    return count
-end
-
 ---@param includeBags boolean|nil @Also target equippable items sitting in bags
 ---@return table[] @Targets { equipped = slotId } or { bag = b, slot = s }
 function LapidaryGems:GetSocketTargets(includeBags)

@@ -242,7 +242,9 @@ local function createFrame()
     frame.picker.text:SetPoint("LEFT", 2, 0)
     frame.picker.text:SetPoint("RIGHT", -20, 0)
     frame.picker.text:SetJustifyH("CENTER")
-    frame.picker.text:SetWordWrap(false)
+    if frame.picker.text.SetWordWrap then
+        frame.picker.text:SetWordWrap(false)
+    end
     frame.picker.arrow = CreateFrame("Button", nil, frame.picker)
     frame.picker.arrow:SetSize(16, 16)
     frame.picker.arrow:SetPoint("RIGHT", -1, 0)
