@@ -9,9 +9,37 @@ local LapidaryMerchant = LapidaryLoader:ImportModule("LapidaryMerchant")
 local LapidaryTimer = LapidaryLoader:ImportModule("LapidaryTimer")
 ---@type LapidaryGems
 local LapidaryGems = LapidaryLoader:ImportModule("LapidaryGems")
+---@type LapidaryFavorites
+local LapidaryFavorites = LapidaryLoader:ImportModule("LapidaryFavorites")
+---@type LapidarySockets
+local LapidarySockets = LapidaryLoader:ImportModule("LapidarySockets")
+---@type LapidaryConstants
+local LapidaryConstants = LapidaryLoader:ImportModule("LapidaryConstants")
 
-local BUY_DELAY = 0.1
+local BUY_DELAY = LapidaryConstants.KIT_BUY_DELAY
+local BUY_BATCH = LapidaryConstants.KIT_BUY_BATCH
+local BATCH_SETTLE = LapidaryConstants.KIT_BATCH_SETTLE
 local buySequence = 0
+
+---Kits store the base gem id, never the variant that happened to be on sale
+---when the gem was added: the charged branch sells a different item id for the
+---same stat, and a kit built on one branch has to keep working on the other.
+---@param gemId number
+---@return number, number|nil @Base id and its upgrade, falling back to the id itself
+local function baseIds(gemId)
+    local entry = LapidaryFavorites:FindEntry(gemId)
+    if not entry then
+        return gemId, nil
+    end
+    return entry.id, entry.upgradeId
+end
+
+---@param gemId number
+---@return number @The variant this vendor branch actually sells
+local function variantOf(gemId)
+    local id, upgradeId = baseIds(gemId)
+    return LapidaryMerchant:GetDisplayItemId(id, upgradeId) or id
+end
 
 ---@return table @All saved kits
 function LapidaryKits:Get()
@@ -98,8 +126,9 @@ function LapidaryKits:SetName(kit, name)
 end
 
 local function findItem(kit, gemId)
+    local id = baseIds(gemId)
     for _, item in ipairs(kit.items) do
-        if item.id == gemId then
+        if baseIds(item.id) == id then
             return item
         end
     end
@@ -117,29 +146,26 @@ end
 ---@param entry LapidaryGemEntry @The cut gem row the player clicked
 ---@param amount number @How many of this gem to want in the kit
 function LapidaryKits:AddGem(kit, entry, amount)
-    local offeredId = LapidaryMerchant:GetDisplayItemId(entry.id, entry.upgradeId)
-    local requiredId = offeredId or entry.id
-    local item = findItem(kit, requiredId)
+    local item = findItem(kit, entry.id)
     if item then
         item.count = item.count + amount
-    else
-        kit.items[#kit.items + 1] = {
-            id = requiredId,
-            upgradeId = nil,
-            key = entry.key,
-            count = amount,
-        }
+        return
     end
+    kit.items[#kit.items + 1] = {
+        id = entry.id,
+        upgradeId = nil,
+        key = entry.key,
+        count = amount,
+    }
 end
 
 ---@param kit table
 ---@param entry LapidaryGemEntry
 ---@param amount number
 function LapidaryKits:RemoveGem(kit, entry, amount)
-    local offeredId = LapidaryMerchant:GetDisplayItemId(entry.id, entry.upgradeId)
-    local requiredId = offeredId or entry.id
+    local wanted = baseIds(entry.id)
     for index, item in ipairs(kit.items) do
-        if item.id == requiredId then
+        if baseIds(item.id) == wanted then
             item.count = item.count - amount
             if item.count <= 0 then
                 table.remove(kit.items, index)
@@ -150,27 +176,24 @@ function LapidaryKits:RemoveGem(kit, entry, amount)
 end
 
 ---@param item table
----@param offeredId number|nil @The exact variant currently offered by the vendor
----@return number @Owned count for the exact variant
+---@param offeredId number|nil @Pass nil to count whichever variant is on sale
+---@return number @Owned count for that variant, bags plus sockets
 function LapidaryKits:GetOwned(item, offeredId)
-    local id = offeredId or item.id
+    local id = offeredId or variantOf(item.id)
     local owned = GetItemCount(id) or 0
     local equipped = LapidaryGems and LapidaryGems:CountSocketed(id) or 0
     return owned + equipped
 end
 
 ---@param item table
----@return number|nil @The exact merchant item required for this purchase
+---@return number|nil @The item id this vendor branch sells for that kit entry
 function LapidaryKits:GetPurchaseId(item)
-    if LapidaryMerchant:GetVariantMode() == "normal" then
-        return item.id
-    end
-    return LapidaryMerchant:FindIndex(item.id) and item.id or nil
+    return variantOf(item.id)
 end
 
 ---@param item table
----@param offeredId number|nil @The exact variant currently offered by the vendor
----@return number @Still to buy for the exact variant
+---@param offeredId number|nil @Pass nil to measure against the variant on sale
+---@return number @Still to buy
 function LapidaryKits:GetMissing(item, offeredId)
     return math.max(0, item.count - self:GetOwned(item, offeredId))
 end
@@ -180,30 +203,21 @@ end
 function LapidaryKits:GetTotals(kit)
     local need, owned, missing = 0, 0, 0
     for _, item in ipairs(kit.items) do
-        local purchaseId = self:GetPurchaseId(item)
-        if purchaseId then
-            local ownedHere = self:GetOwned(item, purchaseId)
-            need = need + item.count
-            owned = owned + ownedHere
-            missing = missing + math.max(0, item.count - ownedHere)
-        end
+        local ownedHere = self:GetOwned(item, self:GetPurchaseId(item))
+        need = need + item.count
+        owned = owned + ownedHere
+        missing = missing + math.max(0, item.count - ownedHere)
     end
     return need, owned, missing
 end
 
 ---@param kit table
----@return boolean @True when a delayed purchase sequence was started
-function LapidaryKits:Buy(kit)
-    if not kit or not LapidaryMerchant:IsCuttingVendor() then
-        return false
-    end
-
-    buySequence = buySequence + 1
-    local sequence = buySequence
+---@return table[] @One entry per gem still to buy, resolved to a merchant index
+local function pendingPurchases(kit)
     local purchases = {}
     for _, item in ipairs(kit.items) do
-        local purchaseId = self:GetPurchaseId(item)
-        local missing = purchaseId and self:GetMissing(item, purchaseId) or 0
+        local purchaseId = LapidaryKits:GetPurchaseId(item)
+        local missing = purchaseId and LapidaryKits:GetMissing(item, purchaseId) or 0
         local index = purchaseId and LapidaryMerchant:FindIndex(purchaseId)
         if missing > 0 and index then
             for _ = 1, missing do
@@ -211,13 +225,65 @@ function LapidaryKits:Buy(kit)
             end
         end
     end
+    return purchases
+end
 
-    for order, purchase in ipairs(purchases) do
-        LapidaryTimer:After((order - 1) * BUY_DELAY, function()
+---Buys a few gems, sockets them, then buys a few more. Buying the whole kit up
+---front would need as many free bag slots as there are gems, and sockets them
+---all in one burst of server traffic.
+---@param queue table[]
+---@param position number
+---@param sequence number
+---@param onDone fun()|nil
+local function runBatch(queue, position, sequence, onDone)
+    if sequence ~= buySequence then
+        return
+    end
+    if position > #queue then
+        if onDone then onDone() end
+        return
+    end
+
+    local last = math.min(position + BUY_BATCH - 1, #queue)
+    for order = position, last do
+        LapidaryTimer:After(BUY_DELAY * (order - position), function()
             if sequence == buySequence and LapidaryMerchant:IsCuttingVendor() then
-                BuyMerchantItem(purchase.index, 1)
+                BuyMerchantItem(queue[order].index, 1)
             end
         end)
     end
-    return #purchases > 0
+
+    local bought = last - position + 1
+    LapidaryTimer:After(BUY_DELAY * bought + BATCH_SETTLE, function()
+        if sequence ~= buySequence then
+            return
+        end
+        LapidarySockets:InsertAll(function()
+            LapidaryTimer:After(BATCH_SETTLE, function()
+                runBatch(queue, last + 1, sequence, onDone)
+            end)
+        end, false)
+    end)
+end
+
+---@param kit table
+---@param onDone fun()|nil
+---@return boolean @True when a purchase sequence was started
+function LapidaryKits:Buy(kit, onDone)
+    if not kit or not LapidaryMerchant:IsCuttingVendor() then
+        return false
+    end
+
+    buySequence = buySequence + 1
+    local queue = pendingPurchases(kit)
+    if #queue == 0 then
+        return false
+    end
+
+    runBatch(queue, 1, buySequence, onDone)
+    return true
+end
+
+function LapidaryKits:AbortBuy()
+    buySequence = buySequence + 1
 end

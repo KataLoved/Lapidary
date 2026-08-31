@@ -100,8 +100,13 @@ LapidaryConstants.GROUP_TITLE_KEYS = {
 
 LapidaryConstants.OPCODE_REMOVE_SOCKET = "ACMSG_REMOVE_SOCKET_FROM_ITEM"
 
-LapidaryConstants.SOCKET_STEP = 0.05
+LapidaryConstants.SOCKET_STEP = 0.25
+LapidaryConstants.REMOVE_STEP = 0.2
 LapidaryConstants.EQUIP_SETTLE_DELAY = 0.5
+
+LapidaryConstants.KIT_BUY_DELAY = 0.3
+LapidaryConstants.KIT_BUY_BATCH = 3
+LapidaryConstants.KIT_BATCH_SETTLE = 1.5
 
 LapidaryConstants.DEFAULTS = {
     enabled = true,
